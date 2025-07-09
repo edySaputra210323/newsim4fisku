@@ -406,12 +406,12 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
             if ($errorMessage) {
                 $errorMessage = "Error pada baris ke-$index: " . $errorMessage;
                 SiswaImportFailed::updateOrCreate(
-                    ['nisn' => $row['nisn']],
+                    ['virtual_account' => $row['no_virtual_account']],
                     [
                         'nis' => $nis,
+                        'nisn' => $row['nisn'],
                         'nama_siswa' => $row['nama_siswa'],
                         'nik' => $row['nik'],
-                        'virtual_account' => $row['no_virtual_account'],
                         'no_hp' => $row['no_hp'],
                         'email' => $row['email'],
                         'agama' => $row['agama'],
@@ -460,13 +460,14 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
                     ->send();
             } else {
                 // Hapus data lama di SiswaImportFailed
-                SiswaImportFailed::where('nisn', $row['nisn'])->delete();
+                SiswaImportFailed::where('virtual_account', $row['no_virtual_account'])->delete();
 
                 // Simpan atau perbarui data ke DataSiswa
                 DataSiswa::updateOrCreate(
-                    ['nisn' => $row['nisn']],
+                    ['virtual_account' => $row['no_virtual_account']],
                     [
                         'nis' => $nis,
+                        'nisn' => $row['nisn'],
                         'nik' => $row['nik'],
                         'nama_siswa' => $row['nama_siswa'],
                         'virtual_account' => $row['no_virtual_account'],
