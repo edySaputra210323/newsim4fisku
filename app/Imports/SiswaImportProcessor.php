@@ -114,17 +114,18 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
                         }
 
             // Validasi dan generate NIS
-            $nis = null;
+                        $nis = null;
             if (!in_array($row['nis'], [null, '', '-', '#N/A'])) {
                 // Jika NIS diisi di Excel, validasi format dan keunikan
-                if (!preg_match('/^\d{7}$/', $row['nis'])) {
+                if (!preg_match('/^\d{2}\d{5}$/', $row['nis'])) {
                     if ($errorMessage) $errorMessage .= ", ";
-                    $errorMessage .= 'NIS [' . $row['nis'] . '] tidak valid, harus 7 digit angka';
+                    $errorMessage .= 'NIS [' . $row['nis'] . '] tidak valid, harus 7 digit angka (2 digit kode unit + 5 digit urutan)';
                 } else {
-                    $nisExists = DataSiswa::query()
-                        ->where('nis', $row['nis'])
-                        ->where('nama_siswa', '!=', $row['nama_siswa'])
-                        ->first();
+                    $nisExists = DataSiswa::where('nis', $row['nis'])
+                        ->where('virtual_account', '!=', $row['no_virtual_account'])
+                        ->exists() || SiswaImportFailed::where('nis', $row['nis'])
+                        ->where('virtual_account', '!=', $row['no_virtual_account'])
+                        ->exists();
                     if ($nisExists) {
                         if ($errorMessage) $errorMessage .= ", ";
                         $errorMessage .= 'NIS [' . $row['nis'] . '] sudah ada di database';
@@ -133,14 +134,19 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
                     }
                 }
             } else {
-                // Generate NIS otomatis berdasarkan unit
-                $nis = $this->generateNis($unit_id, $unitMap);
-                if (!$nis) {
-                    if ($errorMessage) $errorMessage .= ", ";
-                    $errorMessage .= 'Gagal generate NIS otomatis';
+                // Cek apakah data ada di SiswaImportFailed berdasarkan no_virtual_account
+                $failedImport = SiswaImportFailed::where('virtual_account', $row['no_virtual_account'])->first();
+                if ($failedImport && $failedImport->nis && preg_match('/^\d{2}\d{5}$/', $failedImport->nis)) {
+                    $nis = $failedImport->nis;
+                    \Log::info("Reusing NIS {$nis} from SiswaImportFailed for no_virtual_account: {$row['no_virtual_account']}");
+                } else {
+                    $nis = $this->generateNis($unit_id, $unitMap);
+                    if (!$nis) {
+                        if ($errorMessage) $errorMessage .= ", ";
+                        $errorMessage .= 'Gagal generate NIS otomatis';
+                    }
                 }
             }
-
             // Validasi status
             $status_id = null;
             if (!in_array($row['status'], [null, '', '-', '#N/A'])) {
@@ -153,18 +159,23 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
                 $status_id = 1; // Default: Aktif
             }
 
-            // Validasi nik (diabaikan karena tidak ada di tabel)
-            $nik = $row['nik'] ?? null;
+            // Validasi nik
+$nik = $row['nik'] ?? null;
+            if (!in_array($nik, [null, '', '-', '#N/A']) && DataSiswa::where('nik', $nik)
+                ->where('virtual_account', '!=', $row['no_virtual_account'])
+                ->exists()) {
+                if ($errorMessage) $errorMessage .= ", ";
+                $errorMessage .= 'NIK [' . $nik . '] sudah ada di database';
+            }
 
             // Validasi no_virtual_account
             if (in_array($row['no_virtual_account'], [null, '', '-', '#N/A'])) {
                 if ($errorMessage) $errorMessage .= ", ";
                 $errorMessage .= 'No Virtual Account tidak boleh kosong';
             } else {
-                $vaExists = DataSiswa::query()
-                    ->where('virtual_account', $row['no_virtual_account'])
+                $vaExists = DataSiswa::where('virtual_account', $row['no_virtual_account'])
                     ->where('nama_siswa', '!=', $row['nama_siswa'])
-                    ->first();
+                    ->exists();
                 if ($vaExists) {
                     if ($errorMessage) $errorMessage .= ", ";
                     $errorMessage .= 'No Virtual Account [' . $row['no_virtual_account'] . '] sudah ada di database';
@@ -185,29 +196,22 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
 
             // Validasi email (opsional, unik jika diisi)
             if (!in_array($row['email'], [null, '', '-', '#N/A'])) {
-                $emailExists = DataSiswa::query()
-                    ->where('email', $row['email'])
-                    ->where('nama_siswa', '!=', $row['nama_siswa'])
-                    ->first();
+                $emailExists = DataSiswa::where('email', $row['email'])
+                    ->where('virtual_account', '!=', $row['no_virtual_account'])
+                    ->exists();
                 if ($emailExists) {
                     if ($errorMessage) $errorMessage .= ", ";
                     $errorMessage .= 'Email [' . $row['email'] . '] sudah ada di database';
                 }
             }
 
-            // Validasi nisn
-            if (in_array($row['nisn'], [null, '', '-', '#N/A'])) {
+            // Validasi nisn (boleh kosong)
+            $nisn = $row['nisn'] ?? null;
+            if (!in_array($nisn, [null, '', '-', '#N/A']) && DataSiswa::where('nisn', $nisn)
+                ->where('virtual_account', '!=', $row['no_virtual_account'])
+                ->exists()) {
                 if ($errorMessage) $errorMessage .= ", ";
-                $errorMessage .= 'NISN tidak boleh kosong';
-            } else {
-                $nisnExists = DataSiswa::query()
-                    ->where('nisn', $row['nisn'])
-                    ->where('nama_siswa', '!=', $row['nama_siswa'])
-                    ->first();
-                if ($nisnExists) {
-                    if ($errorMessage) $errorMessage .= ", ";
-                    $errorMessage .= 'NISN [' . $row['nisn'] . '] sudah ada di database';
-                }
+                $errorMessage .= 'NISN [' . $nisn . '] sudah ada di database';
             }
 
             // Validasi tempat_lahir
