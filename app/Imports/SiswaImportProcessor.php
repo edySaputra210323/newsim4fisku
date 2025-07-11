@@ -14,6 +14,7 @@ use App\Models\PenghasilanOrtu;
 use App\Models\SiswaImportFailed;
 use Illuminate\Support\Collection;
 use Filament\Notifications\Notification;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
@@ -220,60 +221,75 @@ $nik = $row['nik'] ?? null;
                 $errorMessage .= 'Tempat lahir tidak boleh kosong';
             }
 
-            // Validasi dan konversi tanggal_lahir (opsional)
-           $tanggal_lahir = null;
-           if (!in_array($row['tanggal_lahir'], [null, '', '-', '#N/A'])) {
-               // Bersihkan input
-               $tanggal_lahir_raw = trim($row['tanggal_lahir']);
-               // Coba beberapa format tanggal
-               $formats = ['d/m/Y', 'd-m-Y', 'd.m.Y', 'Y-m-d'];
-               $parsed = false;
+        // === VALIDASI TANGGAL LAHIR ===
+        $tanggal_lahir = null;
+        if (in_array($row['tanggal_lahir'], [null, '', '-', '#N/A'])) {
+            if ($errorMessage) $errorMessage .= ", ";
+            $errorMessage .= 'Tanggal lahir tidak boleh kosong';
+        } else {
+            $tanggal_lahir_raw = trim($row['tanggal_lahir']);
 
-               foreach ($formats as $format) {
-                   try {
-                       $tanggal_lahir = Carbon::createFromFormat($format, $tanggal_lahir_raw)->format('Y-m-d');
-                       $parsed = true;
-                       break;
-                   } catch (\Exception $e) {
-                       // Lanjutkan ke format berikutnya
-                   }
-               }
+            if (is_numeric($tanggal_lahir_raw)) {
+                try {
+                    $carbonDate = Carbon::instance(Date::excelToDateTimeObject($tanggal_lahir_raw));
+                    $tanggal_lahir = $carbonDate->format('Y-m-d');
+                } catch (\Exception $e) {
+                    if ($errorMessage) $errorMessage .= ", ";
+                    $errorMessage .= 'Format tanggal lahir [' . $tanggal_lahir_raw . '] tidak valid, harus d/m/Y (contoh: 28/10/1993)';
+                }
+            } else {
+                $formats = ['d/m/Y', 'd-m-Y', 'd.m.Y', 'Y-m-d'];
+                $parsed = false;
+                foreach ($formats as $format) {
+                    try {
+                        $tanggal_lahir = Carbon::createFromFormat($format, $tanggal_lahir_raw)->format('Y-m-d');
+                        $parsed = true;
+                        break;
+                    } catch (\Exception $e) {
+                        // lanjut
+                    }
+                }
+                if (!$parsed) {
+                    if ($errorMessage) $errorMessage .= ", ";
+                    $errorMessage .= 'Format tanggal lahir [' . $tanggal_lahir_raw . '] tidak valid, harus d/m/Y (contoh: 28/10/1993)';
+                }
+            }
+        }
 
-               // Jika tidak ada format yang cocok
-               if (!$parsed) {
-                   if ($errorMessage) $errorMessage .= ", ";
-                   $errorMessage .= 'Format tanggal lahir [' . $tanggal_lahir_raw . '] tidak valid, harus d/m/Y (contoh: 28/10/1993)';
-               }
-           }
+        // === VALIDASI TANGGAL MASUK ===
+        $tanggal_masuk = null;
+        if (in_array($row['tanggal_masuk'], [null, '', '-', '#N/A'])) {
+            if ($errorMessage) $errorMessage .= ", ";
+            $errorMessage .= 'Tanggal masuk tidak boleh kosong';
+        } else {
+            $tanggal_masuk_raw = trim($row['tanggal_masuk']);
 
-           // Validasi dan konversi tanggal_masuk
-           $tanggal_masuk = null;
-           if (in_array($row['tanggal_masuk'], [null, '', '-', '#N/A'])) {
-               if ($errorMessage) $errorMessage .= ", ";
-               $errorMessage .= 'Tanggal masuk tidak boleh kosong';
-           } else {
-               // Bersihkan input
-               $tanggal_masuk_raw = trim($row['tanggal_masuk']);
-               // Coba beberapa format tanggal
-               $formats = ['d/m/Y', 'd-m-Y', 'd.m.Y', 'Y-m-d'];
-               $parsed = false;
-
-               foreach ($formats as $format) {
-                   try {
-                       $tanggal_masuk = Carbon::createFromFormat($format, $tanggal_masuk_raw)->format('Y-m-d');
-                       $parsed = true;
-                       break;
-                   } catch (\Exception $e) {
-                       // Lanjutkan ke format berikutnya
-                   }
-               }
-
-               // Jika tidak ada format yang cocok
-               if (!$parsed) {
-                   if ($errorMessage) $errorMessage .= ", ";
-                   $errorMessage .= 'Format tanggal masuk [' . $tanggal_masuk_raw . '] tidak valid, harus d/m/Y (contoh: 28/10/1993)';
-               }
-           }
+            if (is_numeric($tanggal_masuk_raw)) {
+                try {
+                    $carbonDate = Carbon::instance(Date::excelToDateTimeObject($tanggal_masuk_raw));
+                    $tanggal_masuk = $carbonDate->format('Y-m-d');
+                } catch (\Exception $e) {
+                    if ($errorMessage) $errorMessage .= ", ";
+                    $errorMessage .= 'Format tanggal masuk [' . $tanggal_masuk_raw . '] tidak valid, harus d/m/Y (contoh: 28/10/1993)';
+                }
+            } else {
+                $formats = ['d/m/Y', 'd-m-Y', 'd.m.Y', 'Y-m-d'];
+                $parsed = false;
+                foreach ($formats as $format) {
+                    try {
+                        $tanggal_masuk = Carbon::createFromFormat($format, $tanggal_masuk_raw)->format('Y-m-d');
+                        $parsed = true;
+                        break;
+                    } catch (\Exception $e) {
+                        // lanjut
+                    }
+                }
+                if (!$parsed) {
+                    if ($errorMessage) $errorMessage .= ", ";
+                    $errorMessage .= 'Format tanggal masuk [' . $tanggal_masuk_raw . '] tidak valid, harus d/m/Y (contoh: 28/10/1993)';
+                }
+            }
+        }
 
             // Validasi transportasi
             $transport_id = null;
@@ -291,7 +307,7 @@ $nik = $row['nik'] ?? null;
             // Validasi yatim_piatu
             if (!in_array($row['yatim_piatu'], ['Yatim', 'Piatu', 'Yatim Piatu', null, '', '-', '#N/A'])) {
                 if ($errorMessage) $errorMessage .= ", ";
-                $errorMessage .= 'Yatim piatu [' . $row['yatim_piatu'] . '] tidak valid, harus Ya atau Tidak';
+                $errorMessage .= 'Yatim piatu [' . $row['yatim_piatu'] . '] tidak valid, harus Yatim, Piatu, Yatim Piatu, Tidak, atau kosongkan kolom';
             }
 
             // Validasi jarak_rumah
@@ -413,15 +429,16 @@ $nik = $row['nik'] ?? null;
                     ['virtual_account' => $row['no_virtual_account']],
                     [
                         'nis' => $nis,
-                        'nisn' => $row['nisn'],
-                        'nama_siswa' => $row['nama_siswa'],
+                        'nisn' => $nisn,
                         'nik' => $row['nik'],
+                        'nama_siswa' => $row['nama_siswa'],
                         'no_hp' => $row['no_hp'],
                         'email' => $row['email'],
                         'agama' => $row['agama'],
                         'jenis_kelamin' => $row['jenis_kelamin'],
                         'tempat_lahir' => $row['tempat_lahir'],
                         'tanggal_lahir' => $tanggal_lahir,
+                        'tanggal_masuk' => $tanggal_masuk,
                         'alamat' => $row['alamat'],
                         'rt' => $row['rt'],
                         'rw' => $row['rw'],
@@ -471,16 +488,16 @@ $nik = $row['nik'] ?? null;
                     ['virtual_account' => $row['no_virtual_account']],
                     [
                         'nis' => $nis,
-                        'nisn' => $row['nisn'],
+                        'nisn' => $nisn,
                         'nik' => $row['nik'],
                         'nama_siswa' => $row['nama_siswa'],
-                        'virtual_account' => $row['no_virtual_account'],
                         'no_hp' => $row['no_hp'],
                         'email' => $row['email'],
                         'agama' => $row['agama'],
                         'jenis_kelamin' => $row['jenis_kelamin'],
                         'tempat_lahir' => $row['tempat_lahir'],
                         'tanggal_lahir' => $tanggal_lahir,
+                        'tanggal_masuk' => $tanggal_masuk,
                         'alamat' => $row['alamat'],
                         'rt' => $row['rt'],
                         'rw' => $row['rw'],
