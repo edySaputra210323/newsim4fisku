@@ -94,6 +94,7 @@ class AdminPanelProvider extends PanelProvider
                     ->avatar(size: 'w-16 h-16', url: asset('images/no_pic.jpg'))
                     ->timeSensitive(morningStart: 3, afternoonStart: 12, eveningStart: 15, nightStart: 18)
                     ->sort(-1)
+                    ->columnSpan('full')
             ])
             
             ->viteTheme('resources/css/filament/admin/theme.css')
