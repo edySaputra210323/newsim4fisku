@@ -40,6 +40,8 @@ return new class extends Migration
             $table->string('dari_bersaudara', 10)->nullable();
             $table->foreignId('jarak_tempuh_id')->nullable()->constrained('jarak_tempuh')->nullOnDelete();
             $table->foreignId('transport_id')->nullable()->constrained('transport')->nullOnDelete();
+            $table->string('asal_sekolah', 255)->nullable();
+            $table->string('npsn', 20)->nullable();
             $table->string('angkatan', 50);
             $table->date('tanggal_masuk')->nullable();
             $table->date('tanggal_keluar')->nullable();

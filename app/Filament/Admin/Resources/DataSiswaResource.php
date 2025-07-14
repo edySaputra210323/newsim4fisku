@@ -9,10 +9,12 @@ use App\Models\DataSiswa;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
+use Filament\Tables\Filters\Filter;
 use App\Imports\SiswaImportProcessor;
 use Filament\Forms\Components\Section;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Layout\Grid;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use EightyNine\ExcelImport\ExcelImportAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -270,6 +272,20 @@ class DataSiswaResource extends Resource
                 ])
 
             ->filters([
+                    SelectFilter::make('status')
+                        ->relationship('statussiswa', 'status')
+                        ->searchable()
+                        ->preload()
+                        ->label('Status siswa'),
+                    SelectFilter::make('angkatan')
+                        ->options(fn () => \App\Models\DataSiswa::query()
+                            ->select('angkatan')
+                            ->distinct()
+                            ->pluck('angkatan', 'angkatan')
+                            ->toArray())
+                        ->searchable()
+                        ->preload()
+                        ->label('Angkatan'),
                     Tables\Filters\TrashedFilter::make(),
                 ])
                 ->actions([

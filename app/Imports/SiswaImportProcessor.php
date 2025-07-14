@@ -25,12 +25,15 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
         'status', 'nik', 'no_virtual_account', 'nama_siswa', 'jenis_kelamin', 'email',
         'no_hp', 'nis', 'nisn', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat',
         'rt', 'rw', 'kabupaten_kota', 'kecamatan', 'desa_lurah', 'transportasi',
-        'yatim_piatu', 'jarak_rumah', 'waktu_tempuh', 'jumlah_saudara', 'anak_ke',
+        'asal_sekolah', 'npsn', 'yatim_piatu', 'jarak_rumah', 'waktu_tempuh', 'jumlah_saudara', 'anak_ke',
         'dari_bersaudara', 'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah',
         'penghasilan_ayah', 'no_hp_ayah', 'nama_ibu', 'pendidikan_ibu',
         'pekerjaan_ibu', 'penghasilan_ibu', 'no_hp_ibu', 'nama_wali',
         'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'no_hp_wali',
         'unit', 'angkatan', 'tanggal_masuk'
+
+
+        // 'status', 'nik', 'no_virtual_account', 'nama_siswa', 'jenis_kelamin', 'email', 'no_hp', 'nis', 'nisn', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'rt', 'rw', 'kabupaten_kota', 'kecamatan', 'desa_lurah', 'transportasi', 'asal_sekolah', 'npsn', 'yatim_piatu', 'jarak_rumah', 'waktu_tempuh', 'jumlah_saudara', 'anak_ke', 'dari_bersaudara', 'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'penghasilan_ayah', 'no_hp_ayah', 'nama_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'penghasilan_ibu', 'no_hp_ibu', 'nama_wali', 'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'no_hp_wali', 'unit', 'angkatan', 'tanggal_masuk' 
     ];
 
     public function collection(Collection $rows)
@@ -417,6 +420,8 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
                 'kelurahan' => $row['desa_lurah'],
                 'jarak_tempuh_id' => $jarak_tempuh_id,
                 'transport_id' => $transport_id,
+                'asal_sekolah' => $row['asal_sekolah'],
+                'npsn' => $row['npsn'],
                 'yatim_piatu' => $row['yatim_piatu'],
                 'jumlah_saudara' => $row['jumlah_saudara'],
                 'anak_ke' => $row['anak_ke'],
@@ -508,6 +513,8 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
                     'anak_ke' => $rowData['anak_ke'],
                     'dari_bersaudara' => $rowData['dari_bersaudara'],
                     'jarak_tempuh_id' => $rowData['jarak_tempuh_id'],
+                    'asal_sekolah' => $rowData['asal_sekolah'],
+                    'npsn' => $rowData['npsn'],
                     'transport_id' => $rowData['transport_id'],
                     'angkatan' => $rowData['angkatan'],
                     'status_id' => $rowData['status_id'],

@@ -50,6 +50,8 @@ class DataSiswa extends Model
         'dari_bersaudara',
         'jarak_tempuh_id',
         'transport_id',
+        'asal_sekolah',
+        'npsn',
         'angkatan',
         'tanggal_masuk',
         'tanggal_keluar',
