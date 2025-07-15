@@ -31,9 +31,6 @@ class SiswaImportProcessor implements ToCollection, WithHeadingRow
         'pekerjaan_ibu', 'penghasilan_ibu', 'no_hp_ibu', 'nama_wali',
         'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'no_hp_wali',
         'unit', 'angkatan', 'tanggal_masuk'
-
-
-        // 'status', 'nik', 'no_virtual_account', 'nama_siswa', 'jenis_kelamin', 'email', 'no_hp', 'nis', 'nisn', 'tempat_lahir', 'tanggal_lahir', 'agama', 'alamat', 'rt', 'rw', 'kabupaten_kota', 'kecamatan', 'desa_lurah', 'transportasi', 'asal_sekolah', 'npsn', 'yatim_piatu', 'jarak_rumah', 'waktu_tempuh', 'jumlah_saudara', 'anak_ke', 'dari_bersaudara', 'nama_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'penghasilan_ayah', 'no_hp_ayah', 'nama_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'penghasilan_ibu', 'no_hp_ibu', 'nama_wali', 'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'no_hp_wali', 'unit', 'angkatan', 'tanggal_masuk' 
     ];
 
     public function collection(Collection $rows)
