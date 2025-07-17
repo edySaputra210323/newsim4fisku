@@ -423,7 +423,7 @@ class DataSiswaResource extends Resource
                                 ->height(160)
                         ])->from('md'),
                     ]),
-                InfolistSection::make('Data Orang Tua')
+                InfolistSection::make('Riwayat Pendidikan')
                     ->schema([
                         InfolistTextEntry::make('nm_ayah')
                             ->label('Nama Ayah')
