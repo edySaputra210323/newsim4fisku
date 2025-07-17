@@ -397,6 +397,14 @@ class DataSiswaResource extends Resource
                                             ->date()
                                             ->color('gray'),
                                         InfolistTextEntry::make('jenis_kelamin')
+                                            ->label('Jenis Kelamin')
+                                            ->formatStateUsing(function (string $state): string {
+                                                return match ($state) {
+                                                    'L' => 'Laki-laki',
+                                                    'P' => 'Perempuan',
+                                                    default => 'Tidak Diketahui',
+                                                };
+                                            })
                                             ->color('gray'),
                                     ]),
                                     InfolistGroup::make([
