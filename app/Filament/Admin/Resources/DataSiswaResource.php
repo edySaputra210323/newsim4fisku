@@ -7,15 +7,29 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\DataSiswa;
 use Filament\Tables\Table;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
 use Filament\Tables\Filters\Filter;
 use App\Imports\SiswaImportProcessor;
-use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Section as FormSection; // Alias untuk Section di Form
+use Filament\Infolists\Components\Section as InfolistSection; // Alias untuk Section di Infolist
+use Filament\Tables\Components\Split as Split; // Alias untuk Split di Tables
+use Filament\Infolists\Components\Split as InfolistSplit; // Alias untuk Split di Infolist
+use Filament\Tables\Components\Grid as TableGrid; // Alias untuk Grid di Tables
+use Filament\Infolists\Components\Grid as InfolistGrid; // Alias untuk Grid di Infolist
+use Filament\Tables\Components\Group as Group; // Alias untuk Group di Tables
+use Filament\Infolists\Components\Group as InfolistGroup; // Alias untuk Group di Infolist
+use Filament\Tables\Components\ImageEntry as ImageEntry; // Alias untuk ImageEntry di Tables
+use Filament\Infolists\Components\ImageEntry as InfolistImageEntry; // Alias untuk ImageEntry di Infolist
+use Filament\Tables\Components\TextEntry as TextEntry; // Alias untuk TextEntry di Tables
+use Filament\Infolists\Components\TextEntry as InfolistTextEntry; // Alias untuk TextEntry di Infolist
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables\Columns\Layout\Grid;
+use Illuminate\Support\Facades\Storage;
+// use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+// use Filament\Infolists\Components\TextEntry;
 use EightyNine\ExcelImport\ExcelImportAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\DataSiswaResource\Pages;
@@ -39,7 +53,7 @@ class DataSiswaResource extends Resource
     {
         return $form
             ->schema([
-                    Section::make()
+                    FormSection::make()
                         ->schema([
                             Forms\Components\TextInput::make('nama_siswa')
                     ->required()
@@ -142,20 +156,41 @@ class DataSiswaResource extends Resource
                 Forms\Components\TextInput::make('user_id')
                     ->numeric(),
                         ])->columnSpan(2)->columns(2),
-                Section::make()
+                FormSection::make()
                     ->schema([
-                        Forms\Components\FileUpload::make('foto_siswa')
-                            ->label('Foto Siswa')
-                            ->disk('public')
-                            ->directory('siswa')
-                            ->acceptedFileTypes(['image/jpeg', 'image/png']),
-                        Forms\Components\FileUpload::make('upload_ijazah_sd')
-                            ->label('Ijazah SD')
-                            ->disk('public')
-                            ->required()
-                            ->directory('ijazah_sd')
-                            ->acceptedFileTypes(['application/pdf'])
-                            ->validationMessages([
+                Forms\Components\FileUpload::make('foto_siswa')
+                        ->image(['jpg', 'png'])
+                        ->label('Foto Siswa')
+                        ->disk('public')
+                        ->minSize(50)
+                        ->maxSize(5120)
+                        ->openable()
+                        ->directory('siswa')
+                        ->removeUploadedFileButtonPosition('right')
+                        ->visibility('public')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                        ->default(function ($record) {
+                            return $record?->foto_siswa; // Ambil nilai dari model
+                        })
+                        ->afterStateUpdated(function ($state, $record, callable $set, callable $get) {
+                            if ($state && $record && $record->foto_siswa) {
+                                Storage::disk('public')->delete($record->foto_siswa);
+                            }
+                        })
+                        ->deleteUploadedFileUsing(function ($record) {
+                            if ($record && $record->foto_siswa) {
+                                Storage::disk('public')->delete($record->foto_siswa);
+                                $record->foto_siswa = null;
+                                $record->save();
+                            }
+                        }),
+                Forms\Components\FileUpload::make('upload_ijazah_sd')
+                        ->label('Ijazah SD')
+                        ->disk('public')
+                        ->required()
+                        ->directory('ijazah_sd')
+                        ->acceptedFileTypes(['application/pdf'])
+                        ->validationMessages([
                                 'required' => 'Ijazah SD wajib diisi',
                             ])
                     ])->columnSpan(1)->columns(1),
@@ -336,4 +371,62 @@ class DataSiswaResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    public static function infolist(Infolist $infolist): Infolist
+{
+    return $infolist
+        ->schema([
+            InfolistSection::make()
+                    ->schema([
+                        InfolistSplit::make([
+                            InfolistGrid::make(2)
+                                ->schema([
+                                    InfolistGroup::make([
+                                        InfolistTextEntry::make('nama_siswa')
+                                            ->label('Nama Siswa')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('nik')
+                                            ->label('NIK')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('tempat_lahir')
+                                            ->label('Tempat Lahir')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('tgl_lahir')
+                                            ->label('Tanggal Lahir')
+                                            ->badge()
+                                            ->date()
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('jenis_kelamin')
+                                            ->color('gray'),
+                                    ]),
+                                    InfolistGroup::make([
+                                        InfolistTextEntry::make('alamat_lengkap')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('no_hp')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('email')
+                                            ->color('gray'),
+                                    ]),
+                                ]),
+                            InfolistImageEntry::make('foto_siswa')
+                                ->hiddenLabel()
+                                ->grow(false)
+                                ->width(130)
+                                ->height(160)
+                        ])->from('md'),
+                    ]),
+                InfolistSection::make('Data Orang Tua')
+                    ->schema([
+                        InfolistTextEntry::make('nm_ayah')
+                            ->label('Nama Ayah')
+                            ->markdown()
+                            ->color('gray'),
+                        InfolistTextEntry::make('nm_ibu')
+                            ->label('Nama Ibu')
+                            ->markdown()
+                            ->color('gray'),
+                    ])
+                    ->collapsible(),
+        ]);
+}
 }

@@ -164,11 +164,28 @@ class DataSiswa extends Model
         return !empty($parts) ? implode(', ', $parts) : '-';
     }
 
-    // Accessor untuk foto_siswa
-    public function getFotoSiswaUrlAttribute()
+    // Boot method untuk handle event
+    protected static function boot()
     {
-        return $this->foto_siswa ? Storage::url($this->foto_siswa) : asset('images/no_pic.jpg');
-    }
+        parent::boot();
+        // Event deleting
+        static::deleting(function ($data_siswa) {
+        // Hapus file foto dari storage
+        if ($data_siswa->foto_siswa) {
+            try {
+                Storage::disk('public')->delete($data_siswa->foto_siswa);
+                \Log::info("File foto pegawai dihapus: {$data_siswa->foto_siswa}");
+            } catch (\Exception $e) {
+                \Log::warning("Gagal menghapus file foto pegawai: {$data_siswa->foto_siswa}, Error: {$e->getMessage()}");
+            }
+        }
+
+        // Hapus user terkait (jika ada)
+        if ($data_siswa->user) {
+            $data_siswa->user->delete();
+        }
+    });
+}
 
     // Relasi ke JarakTempuh
     public function jarakTempuh()
