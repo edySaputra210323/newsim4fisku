@@ -294,5 +294,10 @@ class DataSiswa extends Model
     {
         return $this->hasMany(NilaiSiswa::class, 'data_siswa_id');
     }
+
+    public function getNmAttribute()
+    {
+        return "{$this->nama_siswa} - {$this->nis}";
+    }
 }
     

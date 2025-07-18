@@ -41,6 +41,8 @@ class DataSiswaResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
+    protected static ?string $navigationGroup = 'Siswa';
+
     protected static ?string $navigationLabel = 'Data Siswa';
 
     protected static ?string $modelLabel = 'Data Siswa';
@@ -321,6 +323,15 @@ class DataSiswaResource extends Resource
                         ->searchable()
                         ->preload()
                         ->label('Angkatan'),
+                    SelectFilter::make('yatim_piatu')
+                    ->options([
+                        'Yatim' => 'Yatim',
+                        'Piatu' => 'Piatu',
+                        'Yatim Piatu' => 'Yatim Piatu',
+                    ])
+                    ->label('Yatim Piatu')
+                    ->searchable()
+                    ->preload(),
                     Tables\Filters\TrashedFilter::make(),
                 ])
                 ->actions([
@@ -391,7 +402,7 @@ class DataSiswaResource extends Resource
                                         InfolistTextEntry::make('tempat_lahir')
                                             ->label('Tempat Lahir')
                                             ->color('gray'),
-                                        InfolistTextEntry::make('tgl_lahir')
+                                        InfolistTextEntry::make('tanggal_lahir')
                                             ->label('Tanggal Lahir')
                                             ->badge()
                                             ->date()

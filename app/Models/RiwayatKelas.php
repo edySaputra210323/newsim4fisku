@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RiwayatKelas extends Model
 {
@@ -52,4 +53,5 @@ class RiwayatKelas extends Model
     {
         return $this->belongsTo(StatusSiswa::class, 'status_id');
     }
+
 }
