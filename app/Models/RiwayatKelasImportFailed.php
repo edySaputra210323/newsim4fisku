@@ -3,45 +3,48 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\DataSiswa;
+use App\Models\Kelas;
+use App\Models\Pegawai;
+use App\Models\TahunAjaran;
+use App\Models\Semester;
 
-class RiwayatKelas extends Model
+class RiwayatKelasImportFailed extends Model
 {
-    use SoftDeletes;
-    protected $table = 'riwayat_kelas';
+    protected $table = 'riwayat_kelas_import_faileds';
+
     protected $fillable = [
+        'nis',
         'data_siswa_id',
         'kelas_id',
-        'pegawai_id',
+        'guru_id',
         'tahun_ajaran_id',
         'semester_id',
+        'kelas',
+        'walas',
+        'catatan_gagal',
     ];
 
-    // Relasi ke DataSiswa
     public function dataSiswa()
     {
         return $this->belongsTo(DataSiswa::class, 'data_siswa_id');
     }
 
-    // Relasi ke Kelas
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
-    // Relasi ke Guru
     public function guru()
     {
-        return $this->belongsTo(Pegawai::class, 'pegawai_id');
+        return $this->belongsTo(Pegawai::class, 'guru_id');
     }
 
-    // Relasi ke TahunAjaran
     public function tahunAjaran()
     {
         return $this->belongsTo(TahunAjaran::class, 'tahun_ajaran_id');
     }
 
-    // Relasi ke Semester
     public function semester()
     {
         return $this->belongsTo(Semester::class, 'semester_id');
