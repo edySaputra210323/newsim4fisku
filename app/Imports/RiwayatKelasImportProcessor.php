@@ -51,8 +51,16 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
 
         // Ambil data master
         $kelasMap = Kelas::select('id', 'nama_kelas')->get()->toArray();
-        $pegawaiMap = Pegawai::select('id', 'nm_pegawai')->get()->toArray();
+        $pegawaiMap = Pegawai::select('id', 'nm_pegawai')
+            ->whereNotNull('nm_pegawai') // Pastikan nm_pegawai tidak null
+            ->get()
+            ->toArray();
         $siswaMap = DataSiswa::select('id', 'nis')->get()->toArray();
+
+        // Log data untuk debugging
+        \Log::info('Pegawai Map: ' . json_encode($pegawaiMap));
+        \Log::info('Kelas Map: ' . json_encode($kelasMap));
+        \Log::info('Siswa Map: ' . json_encode($siswaMap));
 
         // Kumpulkan data valid dan error
         $validRows = [];
@@ -66,12 +74,15 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
             $index = $keyIndex + 2;
             $errorMessage = null;
 
+            // Log row untuk debugging
+            \Log::info("Processing row {$index}: " . json_encode($row->toArray()));
+
             // Validasi NIS
             $siswa_id = null;
             if (in_array($row['nis'], [null, '', '-', '#N/A'])) {
                 $errorMessage = 'NIS tidak boleh kosong';
             } else {
-                $siswa_id = $this->searchInArray($siswaMap, 'nis', $row['nis']);
+                $siswa_id = $this->searchInArray($siswaMap, 'nis', trim($row['nis']));
                 if (!$siswa_id) {
                     $errorMessage = "NIS [{$row['nis']}] tidak ditemukan di database siswa";
                 } else {
@@ -92,7 +103,7 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
                 if ($errorMessage) $errorMessage .= ", ";
                 $errorMessage .= 'Kelas tidak boleh kosong';
             } else {
-                $kelas_id = $this->searchInArray($kelasMap, 'nama_kelas', $row['kelas']);
+                $kelas_id = $this->searchInArray($kelasMap, 'nama_kelas', trim($row['kelas']));
                 if (!$kelas_id) {
                     if ($errorMessage) $errorMessage .= ", ";
                     $errorMessage .= "Kelas [{$row['kelas']}] tidak ditemukan di database kelas";
@@ -105,7 +116,7 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
                 if ($errorMessage) $errorMessage .= ", ";
                 $errorMessage .= 'Wali kelas tidak boleh kosong';
             } else {
-                $guru_id = $this->searchInArray($pegawaiMap, 'nm_pegawai', $row['walas']);
+                $guru_id = $this->searchInArray($pegawaiMap, 'nm_pegawai', trim($row['walas']));
                 if (!$guru_id) {
                     if ($errorMessage) $errorMessage .= ", ";
                     $errorMessage .= "Wali kelas [{$row['walas']}] tidak ditemukan di database pegawai";
@@ -116,7 +127,7 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
             $rowData = [
                 'data_siswa_id' => $siswa_id,
                 'kelas_id' => $kelas_id,
-                'guru_id' => $guru_id,
+                'pegawai_id' => $guru_id,
                 'tahun_ajaran_id' => $activeTahunAjaran->id,
                 'semester_id' => $activeSemester->id,
                 'nis' => $row['nis'],
@@ -158,7 +169,7 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
             RiwayatKelas::create([
                 'data_siswa_id' => $rowData['data_siswa_id'],
                 'kelas_id' => $rowData['kelas_id'],
-                'guru_id' => $rowData['guru_id'],
+                'pegawai_id' => $rowData['pegawai_id'],
                 'tahun_ajaran_id' => $rowData['tahun_ajaran_id'],
                 'semester_id' => $rowData['semester_id'],
                 'created_by' => auth()->id(),
@@ -177,7 +188,7 @@ class RiwayatKelasImportProcessor implements ToCollection, WithHeadingRow
     protected function searchInArray(array $data, string $searchKey, string $searchValue): ?int
     {
         foreach ($data as $item) {
-            if ($item[$searchKey] === $searchValue) {
+            if (isset($item[$searchKey]) && $item[$searchKey] === trim($searchValue)) {
                 return $item['id'];
             }
         }

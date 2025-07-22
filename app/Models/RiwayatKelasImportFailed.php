@@ -17,7 +17,7 @@ class RiwayatKelasImportFailed extends Model
         'nis',
         'data_siswa_id',
         'kelas_id',
-        'guru_id',
+        'pegawai_id',
         'tahun_ajaran_id',
         'semester_id',
         'kelas',
@@ -37,7 +37,7 @@ class RiwayatKelasImportFailed extends Model
 
     public function guru()
     {
-        return $this->belongsTo(Pegawai::class, 'guru_id');
+        return $this->belongsTo(Pegawai::class, 'pegawai_id');
     }
 
     public function tahunAjaran()

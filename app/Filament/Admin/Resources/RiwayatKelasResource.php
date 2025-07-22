@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use stdClass;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -9,8 +10,12 @@ use App\Models\DataSiswa;
 use Filament\Tables\Table;
 use App\Models\RiwayatKelas;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Section;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\RiwayatKelasResource\Pages;
@@ -180,23 +185,154 @@ class RiwayatKelasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->extremePaginationLinks()
+        ->recordUrl(null)
+        ->paginated([40, 50, 60])
+        ->defaultPaginationPageOption(40)
+        ->striped()
+        ->recordClasses(function () {
+            $classes = 'table-vertical-align-top ';
+            return $classes;
+        })
             ->columns([
+                Tables\Columns\TextColumn::make('index')
+                ->label('No')
+                ->width('1%')
+                ->alignCenter()
+                ->state(
+                    static function (HasTable $livewire, stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            (intval($livewire->getTableRecordsPerPage()) * (
+                                intval($livewire->getTablePage()) - 1
+                            ))
+                        );
+                    }
+                ),
                 Tables\Columns\TextColumn::make('dataSiswa.nama_siswa')
-                    ->label('Nama Siswa')
+                    ->searchable()
                     ->sortable()
-                    ->searchable(),
+                    ->weight(FontWeight::Bold)
+                    ->label('Nama Siswa')
+                    ->description(function ($record) {
+                        $data = '';
+                        if (!empty($record->dataSiswa->nis)) {
+                            $data .= '<small>NIS : ' . $record->dataSiswa->nis . '</small>';
+                        }
+                        if (!empty($record->dataSiswa->nisn)) {
+                            if ($data != '')
+                                $data .= '<br>';
+                            $data .= '<small>NISN : ' . $record->dataSiswa->nisn . '</small>';
+                        }
+                        return new HtmlString($data);
+                    }),
+                // Tables\Columns\TextColumn::make('dataSiswa.nis')
+                //     ->label('NIS')
+                //     ->sortable()
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('dataSiswa.nisn')
+                //     ->label('NISN')
+                //     ->sortable()
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('dataSiswa.nama_siswa')
+                //     ->label('Nama Siswa')
+                //     ->weight(FontWeight::Bold)
+                //     ->sortable()
+                //     ->searchable(),
+                Tables\Columns\TextColumn::make('dataSiswa.jenis_kelamin')
+                    ->label('JK'),
+                Tables\Columns\TextColumn::make('dataSiswa.tempat_tanggal_lahir')
+                    ->label('Tempat Tanggal Lahir'),
+                Tables\Columns\TextColumn::make('dataSiswa.status_jumlah_saudara')
+                    ->label('Jumlah Saudara'),
+                Tables\Columns\TextColumn::make('dataSiswa.nm_ayah')
+                    ->searchable()
+                    ->weight(FontWeight::Bold)
+                    ->label('Nama Ayah')
+                    ->description(function ($record) {
+                        $data = '';
+
+                        if (!empty($record->dataSiswa->no_hp_ayah)) {
+                            $data .= '<small>No HP Ayah: ' . $record->dataSiswa->no_hp_ayah . '</small>';
+                        }
+
+                        if (!empty($record->dataSiswa->pekerjaan_ayah_id) && $record->dataSiswa->pekerjaanAyah) {
+                            if ($data != '') {
+                                $data .= '<br>';
+                            }
+                            $data .= '<small>Pekerjaan Ayah: ' . $record->dataSiswa->pekerjaanAyah->nama_pekerjaan . '</small>';
+                        }
+
+                        if (!empty($record->dataSiswa->pendidikan_ayah_id) && $record->dataSiswa->pendidikanAyah) {
+                            if ($data != '') {
+                                $data .= '<br>';
+                            }
+                            $data .= '<small>Pendidikan Ayah: ' . $record->dataSiswa->pendidikanAyah->jenjang_pendidikan . '</small>';
+                        }
+
+                        if (!empty($record->dataSiswa->penghasilan_ayah_id) && $record->dataSiswa->penghasilanAyah) {
+                            if ($data != '') {
+                                $data .= '<br>';
+                            }
+                            $data .= '<small>Penghasilan Ayah: ' . $record->dataSiswa->penghasilanAyah->penghasilan . '</small>';
+                        }
+
+                        return new HtmlString($data);
+                    }),
+                    Tables\Columns\TextColumn::make('dataSiswa.nm_ibu')
+                    ->searchable()
+                    ->weight(FontWeight::Bold)
+                    ->label('Nama Ibu')
+                    ->description(function ($record) {
+                        $data = '';
+
+                        if (!empty($record->dataSiswa->no_hp_ibu)) {
+                            $data .= '<small>No HP Ibu: ' . $record->dataSiswa->no_hp_ibu . '</small>';
+                        }
+
+                        if (!empty($record->dataSiswa->pekerjaan_ibu_id) && $record->dataSiswa->pekerjaanIbu) {
+                            if ($data != '') {
+                                $data .= '<br>';
+                            }
+                            $data .= '<small>Pekerjaan Ibu: ' . $record->dataSiswa->pekerjaanIbu->nama_pekerjaan . '</small>';
+                        }
+
+                        if (!empty($record->dataSiswa->pendidikan_ibu_id) && $record->dataSiswa->pendidikanIbu) {
+                            if ($data != '') {
+                                $data .= '<br>';
+                            }
+                            $data .= '<small>Pendidikan Ibu: ' . $record->dataSiswa->pendidikanIbu->jenjang_pendidikan . '</small>';
+                        }
+
+                        if (!empty($record->dataSiswa->penghasilan_ibu_id) && $record->dataSiswa->penghasilanIbu) {
+                            if ($data != '') {
+                                $data .= '<br>';
+                            }
+                            $data .= '<small>Penghasilan Ibu: ' . $record->dataSiswa->penghasilanIbu->penghasilan . '</small>';
+                        }
+
+                        return new HtmlString($data);
+                    }),
+                Tables\Columns\TextColumn::make('dataSiswa.alamat_lengkap')
+                    ->label('Alamat')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('kelas.nama_kelas')
                     ->label('Kelas')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('guru.nm_pegawai')
                     ->label('Wali Kelas')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tahunAjaran.th_ajaran')
                     ->label('Tahun Ajaran')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('semester.nm_semester')
                     ->label('Semester')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -211,11 +347,32 @@ class RiwayatKelasResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('th_ajaran_id')
+                    ->label('Tahun Ajaran')
+                    ->relationship('tahunAjaran', 'th_ajaran')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('semester_id')
+                    ->label('Semester')
+                    ->relationship('semester', 'nm_semester')
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->iconButton()
+                    ->color('primary')
+                    ->icon('heroicon-m-eye'),
+                Tables\Actions\EditAction::make()
+                ->iconButton()
+                ->color('warning')
+                ->icon('heroicon-m-pencil-square'),
+            Tables\Actions\DeleteAction::make()
+                ->iconButton()
+                ->color('danger')
+                ->icon('heroicon-m-trash')
+                ->modalHeading('Hapus siswa dari rombongan belajar'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

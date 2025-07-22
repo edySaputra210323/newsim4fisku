@@ -96,7 +96,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ public_path('images/logoSMPIT.jpg') }}" alt="Logo SMPIT AFISKU">
+        <img src="{{ public_path('images/logoSMPIT.png') }}" alt="Logo SMPIT AFISKU">
 
         <div class="header-text">
             <h1>AGENDA SURAT MASUK</h1>

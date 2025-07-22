@@ -42,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName(env('APP_NAME'))
             ->maxContentWidth('full')
             ->sidebarCollapsibleOnDesktop()
-            ->brandLogo(asset('images/logoSMPIT.jpg'))
+            ->brandLogo(asset('images/logoSMPIT.png'))
             ->favicon(asset('favicons/android-chrome-192x192.png'))
             ->brandLogoHeight(fn() => request()->route()->getName() == 'filament.admin.auth.login' ? '10rem' : '5rem')
             ->defaultThemeMode(ThemeMode::Light)

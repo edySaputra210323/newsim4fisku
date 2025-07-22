@@ -28,13 +28,19 @@ class TahunAjaranSeeder extends Seeder
             ],
             [
                 'th_ajaran' => '2023/2024',
-                'status' => true,
+                'status' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'th_ajaran' => '2024/2025',
                 'status' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'th_ajaran' => '2025/2026',
+                'status' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

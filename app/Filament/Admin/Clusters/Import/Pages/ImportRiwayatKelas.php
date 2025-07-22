@@ -2,25 +2,25 @@
 
 namespace App\Filament\Admin\Clusters\Import\Pages;
 
-
+use App\Filament\Admin\Clusters\Import;
+use App\Imports\RiwayatKelasImportProcessor;
+use App\Models\RiwayatKelasImportFailed;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Page;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables;
 use Filament\Tables\Table;
-use App\Filament\Admin\Clusters\Import;
-use Filament\Tables\Contracts\HasTable;
-use App\Models\RiwayatKelasImportFailed;
-use App\Imports\RiwayatKelasImportProcessor;
-use Filament\Tables\Concerns\InteractsWithTable;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use stdClass;
 
 class ImportRiwayatKelas extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    // use HasPageShield;
+    use HasPageShield;
     
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-up-on-square';
 
     protected static string $view = 'filament.admin.clusters.import.pages.import-riwayat-kelas';
 

@@ -164,6 +164,21 @@ class DataSiswa extends Model
         return !empty($parts) ? implode(', ', $parts) : '-';
     }
 
+    public function getStatusJumlahSaudaraAttribute()
+    {
+        $parts = [];
+
+        if (!empty($this->anak_ke)) {
+            $parts[] = "Anak ke {$this->anak_ke}";
+        }
+
+        if (!empty($this->jumlah_saudara)) {
+            $parts[] = "dari {$this->jumlah_saudara} bersaudara";
+        }
+
+        return !empty($parts) ? implode(', ', $parts) : '-';
+    }
+
     // Boot method untuk handle event
     protected static function boot()
     {

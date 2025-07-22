@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Closure;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Database\Seeders\PegawaiSeeder;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 class DatabaseSeeder extends Seeder
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
             TransportSeeder::class,
             KelasSeeder::class,
             StatusSiswaSeeder::class,
+            PegawaiSeeder::class,
         ]);
     }
 
