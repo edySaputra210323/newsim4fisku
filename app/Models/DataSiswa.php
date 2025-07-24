@@ -58,6 +58,7 @@ class DataSiswa extends Model
         'lanjut_sma_dimana',
         'status_id',
         'pindah_id',
+        'dokumen_pendukung',
         'upload_ijazah_sd',
         'foto_siswa',
         'nm_ayah',
@@ -174,6 +175,21 @@ class DataSiswa extends Model
 
         if (!empty($this->jumlah_saudara)) {
             $parts[] = "dari {$this->jumlah_saudara} bersaudara";
+        }
+
+        return !empty($parts) ? implode(', ', $parts) : '-';
+    }
+
+    public function getAsalSekolahNpsnAttribute()
+    {
+        $parts = [];
+
+        if (!empty($this->asal_sekolah)) {
+            $parts[] = "{$this->asal_sekolah}";
+        }
+
+        if (!empty($this->npsn)) {
+            $parts[] = "- {$this->npsn}";
         }
 
         return !empty($parts) ? implode(', ', $parts) : '-';

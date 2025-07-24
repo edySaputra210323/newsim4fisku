@@ -74,6 +74,9 @@ class ListRiwayatKelas extends ListRecords
                 'all' => Tab::make('Semua Kelas')
                     ->badge(RiwayatKelas::where('tahun_ajaran_id', $activeTahunAjaran->id)
                         ->where('semester_id', $activeSemester->id)
+                        ->join('data_siswa', 'riwayat_kelas.data_siswa_id', '=', 'data_siswa.id')
+                        ->join('status_siswa', 'data_siswa.status_id', '=', 'status_siswa.id')
+                        ->where('status_siswa.status', 'aktif')
                         ->count())
                     ->badgeColor('primary'),
             ];
@@ -84,9 +87,15 @@ class ListRiwayatKelas extends ListRecords
             'all' => Tab::make('Semua Kelas')
                 ->modifyQueryUsing(fn (Builder $query) => $query
                     ->where('tahun_ajaran_id', $activeTahunAjaran->id)
-                    ->where('semester_id', $activeSemester->id))
+                    ->where('semester_id', $activeSemester->id)
+                    ->join('data_siswa', 'riwayat_kelas.data_siswa_id', '=', 'data_siswa.id')
+                    ->join('status_siswa', 'data_siswa.status_id', '=', 'status_siswa.id')
+                    ->where('status_siswa.status', 'aktif'))
                 ->badge(RiwayatKelas::where('tahun_ajaran_id', $activeTahunAjaran->id)
                     ->where('semester_id', $activeSemester->id)
+                    ->join('data_siswa', 'riwayat_kelas.data_siswa_id', '=', 'data_siswa.id')
+                    ->join('status_siswa', 'data_siswa.status_id', '=', 'status_siswa.id')
+                    ->where('status_siswa.status', 'aktif')
                     ->count())
                 ->badgeColor('primary'),
         ];
@@ -94,12 +103,18 @@ class ListRiwayatKelas extends ListRecords
         foreach ($kelas as $id => $nama_kelas) {
             $tabs[$id] = Tab::make($nama_kelas)
                 ->modifyQueryUsing(fn (Builder $query) => $query
-                    ->where('kelas_id', $id)
-                    ->where('tahun_ajaran_id', $activeTahunAjaran->id)
-                    ->where('semester_id', $activeSemester->id))
-                ->badge(RiwayatKelas::where('kelas_id', $id)
+                    ->where('riwayat_kelas.kelas_id', $id)
                     ->where('tahun_ajaran_id', $activeTahunAjaran->id)
                     ->where('semester_id', $activeSemester->id)
+                    ->join('data_siswa', 'riwayat_kelas.data_siswa_id', '=', 'data_siswa.id')
+                    ->join('status_siswa', 'data_siswa.status_id', '=', 'status_siswa.id')
+                    ->where('status_siswa.status', 'aktif'))
+                ->badge(RiwayatKelas::where('riwayat_kelas.kelas_id', $id)
+                    ->where('tahun_ajaran_id', $activeTahunAjaran->id)
+                    ->where('semester_id', $activeSemester->id)
+                    ->join('data_siswa', 'riwayat_kelas.data_siswa_id', '=', 'data_siswa.id')
+                    ->join('status_siswa', 'data_siswa.status_id', '=', 'status_siswa.id')
+                    ->where('status_siswa.status', 'aktif')
                     ->count())
                 ->badgeColor('success');
         }

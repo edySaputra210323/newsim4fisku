@@ -47,6 +47,7 @@ return new class extends Migration
             $table->date('tanggal_keluar')->nullable();
             $table->string('lanjut_sma_dimana', 255)->nullable();
             $table->string('upload_ijazah_sd')->nullable();
+            $table->string('dokumen_pendukung')->nullable();
             $table->string('foto_siswa', 100)->nullable();
             $table->foreignId('status_id')->nullable()->constrained('status_siswa')->default(1)->nullOnDelete(); // Default: Aktif;
             $table->string('nm_ayah', 100)->nullable();

@@ -2,38 +2,48 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\DataSiswa;
+use App\Models\Transport;
 use Filament\Tables\Table;
+use App\Models\JarakTempuh;
+use App\Models\StatusSiswa;
+use App\Models\PekerjaanOrtu;
+use App\Models\PendidikanOrtu;
+use App\Models\PenghasilanOrtu;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Grid;
 use Filament\Tables\Filters\Filter;
 use App\Imports\SiswaImportProcessor;
-use Filament\Forms\Components\Section as FormSection; // Alias untuk Section di Form
-use Filament\Infolists\Components\Section as InfolistSection; // Alias untuk Section di Infolist
-use Filament\Tables\Components\Split as Split; // Alias untuk Split di Tables
-use Filament\Infolists\Components\Split as InfolistSplit; // Alias untuk Split di Infolist
-use Filament\Tables\Components\Grid as TableGrid; // Alias untuk Grid di Tables
-use Filament\Infolists\Components\Grid as InfolistGrid; // Alias untuk Grid di Infolist
-use Filament\Tables\Components\Group as Group; // Alias untuk Group di Tables
-use Filament\Infolists\Components\Group as InfolistGroup; // Alias untuk Group di Infolist
-use Filament\Tables\Components\ImageEntry as ImageEntry; // Alias untuk ImageEntry di Tables
-use Filament\Infolists\Components\ImageEntry as InfolistImageEntry; // Alias untuk ImageEntry di Infolist
-use Filament\Tables\Components\TextEntry as TextEntry; // Alias untuk TextEntry di Tables
-use Filament\Infolists\Components\TextEntry as InfolistTextEntry; // Alias untuk TextEntry di Infolist
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Facades\Storage;
-// use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-// use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Fieldset;
 use EightyNine\ExcelImport\ExcelImportAction;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\DataSiswaResource\Pages;
+use Joaopaulolndev\FilamentPdfViewer\Facades\FilamentPdfViewer;
 use App\Filament\Admin\Resources\DataSiswaResource\RelationManagers;
+use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\PdfViewerEntry;
+use Filament\Tables\Components\Group as Group; // Alias untuk Group di Tables
+use Filament\Tables\Components\Split as Split; // Alias untuk Split di Tables
+use Filament\Tables\Components\Grid as TableGrid; // Alias untuk Grid di Tables
+use Joaopaulolndev\FilamentPdfViewer\Infolists\Components\FilamentPdfViewerEntry;
+use Filament\Forms\Components\Section as FormSection; // Alias untuk Section di Form
+use Filament\Infolists\Components\Grid as InfolistGrid; // Alias untuk Grid di Infolist
+use Filament\Tables\Components\TextEntry as TextEntry; // Alias untuk TextEntry di Tables
+use Filament\Infolists\Components\Group as InfolistGroup; // Alias untuk Group di Infolist
+use Filament\Infolists\Components\Split as InfolistSplit; // Alias untuk Split di Infolist
+use Filament\Tables\Components\ImageEntry as ImageEntry; // Alias untuk ImageEntry di Tables
+use Filament\Infolists\Components\Section as InfolistSection; // Alias untuk Section di Infolist
+use Filament\Infolists\Components\TextEntry as InfolistTextEntry; // Alias untuk TextEntry di Infolist
+use Filament\Infolists\Components\ImageEntry as InfolistImageEntry; // Alias untuk ImageEntry di Infolist
 
 class DataSiswaResource extends Resource
 {
@@ -55,117 +65,255 @@ class DataSiswaResource extends Resource
     {
         return $form
             ->schema([
-                    FormSection::make()
-                        ->schema([
-                            Forms\Components\TextInput::make('nama_siswa')
-                    ->required()
-                    ->maxLength(100)
-                    ->validationMessages([
-                        'required' => 'Nama siswa wajib diisi',
-                    ])
-                    ->columnSpan('full'),
-                Forms\Components\TextInput::make('nis')
-                    ->required()
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('nisn')
-                    ->required()
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('no_hp')
-                    ->maxLength(15),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('agama')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('jenis_kelamin')
-                    ->required(),
-                Forms\Components\TextInput::make('tempat_lahir')
-                    ->required()
-                    ->maxLength(50),
-                Forms\Components\DatePicker::make('tanggal_lahir')
-                    ->required(),
-                Forms\Components\TextInput::make('negara')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('provinsi')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('kabupaten')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('kecamatan')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('kelurahan')
-                    ->maxLength(50),
-                Forms\Components\TextInput::make('alamat')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('rt')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('rw')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('kode_pos')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('yatim_piatu'),
-                Forms\Components\TextInput::make('penyakit')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('jumlah_saudara')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('anak_ke')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('dari_bersaudara')
-                    ->maxLength(10),
-                Forms\Components\TextInput::make('jarak_tempuh_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('transport_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('angkatan')
-                    ->required()
-                    ->maxLength(50),
-                Forms\Components\DatePicker::make('tanggal_masuk'),
-                Forms\Components\DatePicker::make('tanggal_keluar'),
-                Forms\Components\TextInput::make('lanjut_sma_dimana')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('status_siswa_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('nm_ayah')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('pendidikan_ayah_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('pekerjaan_ayah_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('penghasilan_ayah_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('no_hp_ayah')
-                    ->maxLength(15),
-                Forms\Components\TextInput::make('nm_ibu')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('pendidikan_ibu_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('pekerjaan_ibu_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('penghasilan_ibu_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('no_hp_ibu')
-                    ->maxLength(15),
-                Forms\Components\TextInput::make('nm_wali')
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('pendidikan_wali_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('pekerjaan_wali_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('penghasilan_wali_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('no_hp_wali')
-                    ->maxLength(15),
-                Forms\Components\TextInput::make('user_id')
-                    ->numeric(),
-                        ])->columnSpan(2)->columns(2),
-                FormSection::make()
+                FormSection::make('Data Siswa')
+                    ->description('bio data siswa sesuai kartu identitas atau kk atau surat lahir')
+                    ->icon('heroicon-m-user-group')
                     ->schema([
+                        Forms\Components\TextInput::make('nama_siswa')
+                            ->required()
+                            ->maxLength(100)
+                            ->validationMessages([
+                                'required' => 'Nama siswa wajib diisi',
+                            ])
+                            ->columnSpan('full'),
+                        Forms\Components\TextInput::make('nis')
+                            ->label('NIS')
+                            ->placeholder('Nomor Induk Siswa')
+                            ->numeric()
+                            ->unique(table: DataSiswa::class, ignoreRecord: true)
+                            ->required()
+                            ->maxLength(7)
+                            ->minLength(7)
+                            ->extraInputAttributes([
+                                'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')",
+                            ])
+                            ->validationMessages([
+                                'required' => 'NIS tidak boleh kosong',
+                                'max' => 'NIS tidak boleh lebih dari 7 angka',
+                                'numeric' => 'NIS harus angka',
+                                'unique' => 'NIS sudah ada',
+                            ]),
+                        Forms\Components\TextInput::make('nisn')
+                            ->label('NISN')
+                            ->placeholder('Nomor Induk Siswa Nasional')
+                            ->numeric()
+                            ->unique(table: DataSiswa::class, ignoreRecord: true)
+                            ->required()
+                            ->maxLength(10)
+                            ->minLength(10)
+                            ->extraInputAttributes([
+                                'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')",
+                            ])
+                            ->validationMessages([
+                                'required' => 'NISN tidak boleh kosong',
+                                'max' => 'NISN tidak boleh lebih dari 10 angka',
+                                'numeric' => 'NISN harus angka',
+                                'unique' => 'NISN sudah ada',
+                            ]),
+                        Forms\Components\TextInput::make('no_hp')
+                            ->label('Nomor Telepon')
+                            ->maxLength(15)
+                            ->numeric()
+                            ->required()
+                            ->maxLength(15)
+                            ->minLength(10)
+                            ->validationMessages([
+                                'required' => 'Nomor telepon wajib diisi',
+                                'max' => 'Nomor telepon tidak boleh lebih dari 15 angka',
+                                'numeric' => 'Nomor telepon harus angka',
+                                'min' => 'Nomor telepon tidak boleh kurang dari 10 angka',
+                            ]),
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->email()
+                            ->required()
+                            ->maxLength(100)
+                            ->validationMessages([
+                                'required' => 'Email wajib diisi',
+                                'max' => 'Email tidak boleh lebih dari 100 karakter',
+                                'email' => 'Email tidak valid',
+                            ]),
+                        Forms\Components\TextInput::make('agama')
+                            ->label('Agama')
+                            ->maxLength(50),
+                        Forms\Components\Select::make('jenis_kelamin')
+                            ->options(['L' => 'Laki-laki', 'P' => 'Perempuan'])
+                            ->label('Jenis Kelamin')
+                            ->required()
+                            ->native(false)
+                            ->validationMessages([
+                                'required' => 'Jenis kelamin wajib dipilih',
+                            ]),
+                        Forms\Components\TextInput::make('tempat_lahir')
+                            ->label('Tempat Lahir')
+                            ->required()
+                            ->maxLength(50)
+                            ->validationMessages([
+                                'required' => 'Tempat lahir wajib diisi',
+                                'max' => 'Tempat lahir tidak boleh lebih dari 50 karakter',
+                            ]),
+                        Forms\Components\DatePicker::make('tanggal_lahir')
+                            ->label('Tanggal Lahir')
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d/m/Y')
+                            ->validationMessages([
+                                'required' => 'Tanggal Lahir tidak boleh kosong',
+                            ]),
+                        Forms\Components\Section::make('Alamat')
+                            ->description('Alamat sesuai kartu identitas atau kk')
+                            ->icon('heroicon-m-map-pin')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('negara')
+                                            ->maxLength(50),
+                                        Forms\Components\TextInput::make('provinsi')
+                                            ->maxLength(50),
+                                        Forms\Components\TextInput::make('kabupaten')
+                                            ->maxLength(50),
+                                    ]),
+                                Forms\Components\TextInput::make('kecamatan')
+                                    ->maxLength(50),
+                                Forms\Components\TextInput::make('kelurahan')
+                                    ->maxLength(50),
+                                Forms\Components\TextInput::make('alamat')
+                                    ->maxLength(100),
+                                Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('rt')
+                                            ->maxLength(10),
+                                        Forms\Components\TextInput::make('rw')
+                                            ->maxLength(10),
+                                        Forms\Components\TextInput::make('kode_pos')
+                                            ->maxLength(10),
+                                    ]),
+                            ]),
+                        Forms\Components\Section::make('Data Pelengkap')
+                            ->schema([
+                                Forms\Components\Select::make('yatim_piatu')
+                                    ->native(false)
+                                    ->placeholder('kosongkan jika bukan yatim atau piatu')
+                                    ->options([
+                                        'Yatim' => 'Yatim',
+                                        'Piatu' => 'Piatu',
+                                        'Yatim Piatu' => 'Yatim Piatu'
+                                    ])
+                                    ->label('Yatim Piatu'),
+                                Forms\Components\TextInput::make('penyakit')
+                                    ->maxLength(100),
+                                
+                                Grid::make(3)
+                                    ->schema([
+                            Forms\Components\TextInput::make('jumlah_saudara')
+                                ->maxLength(10)
+                                ->numeric(),
+                            Forms\Components\TextInput::make('anak_ke')
+                                ->maxLength(10)
+                                ->numeric(),
+                            Forms\Components\TextInput::make('dari_bersaudara')
+                                ->maxLength(10)
+                                ->numeric(),
+                            ]),
+                        Forms\Components\Select::make('jarak_tempuh_id')
+                            ->label('Jarak Tempuh')
+                            ->placeholder('Pilih Jarak Tempuh')
+                            ->options(JarakTempuh::orderBy('nama_jarak_tempuh')->get()->pluck('nama_jarak_tempuh', 'id')),
+                        Forms\Components\Select::make('transport_id')
+                            ->label('Transport')
+                            ->placeholder('Pilih Transport')
+                            ->options(Transport::orderBy('nama_transport')->get()->pluck('nama_transport', 'id')),
+                        Forms\Components\TextInput::make('angkatan')
+                            ->required()
+                            ->placeholder('Penulisan angkatan menggunakan huruf romawi misalnya : XII')
+                            ->maxLength(4)
+                            ->validationMessages([
+                                'required' => 'Angkatan wajib diisi',
+                                'max' => 'Angkatan maksimal 4 karakter',
+                            ]),
+                        Forms\Components\DatePicker::make('tanggal_masuk')
+                            ->label('Tanggal Masuk')
+                            ->native(false)
+                            ->displayFormat('d/m/Y'),
+                        Forms\Components\TextInput::make('lanjut_sma_dimana')
+                            ->maxLength(255),
+            ]),
+                Forms\Components\Section::make('Data Ayah')
+                ->schema([
+                    Forms\Components\TextInput::make('nm_ayah')
+                    ->maxLength(100),
+                    Forms\Components\TextInput::make('no_hp_ayah')
+                    ->maxLength(15),
+                    Grid::make(3)
+                    ->schema([
+                        Forms\Components\Select::make('pendidikan_ayah_id')
+                            ->options(PendidikanOrtu::orderBy('jenjang_pendidikan')->get()->pluck('jenjang_pendidikan', 'id'))
+                            ->native(false)
+                            ->label('Pendidikan Ayah'),
+                        Forms\Components\Select::make('pekerjaan_ayah_id')
+                            ->options(PekerjaanOrtu::orderBy('nama_pekerjaan')->get()->pluck('nama_pekerjaan', 'id'))
+                            ->native(false)
+                            ->label('Pekerjaan Ayah'),
+                        Forms\Components\Select::make('penghasilan_ayah_id')
+                            ->options(PenghasilanOrtu::orderBy('penghasilan')->get()->pluck('penghasilan', 'id'))
+                            ->native(false)
+                            ->label('Penghasilan Ayah'),
+                    ])
+                ]),
+
+                Forms\Components\Section::make('Data Ibu')
+                ->schema([
+                    Forms\Components\TextInput::make('nm_ibu')
+                    ->maxLength(100),
+                    Forms\Components\TextInput::make('no_hp_ibu')
+                    ->maxLength(15),
+                    Grid::make(3)
+                    ->schema([
+                        Forms\Components\Select::make('pendidikan_ibu_id')
+                            ->options(PendidikanOrtu::orderBy('jenjang_pendidikan')->get()->pluck('jenjang_pendidikan', 'id'))
+                            ->native(false)
+                            ->label('Pendidikan Ibu'),
+                        Forms\Components\Select::make('pekerjaan_ibu_id')
+                            ->options(PekerjaanOrtu::orderBy('nama_pekerjaan')->get()->pluck('nama_pekerjaan', 'id'))
+                            ->native(false)
+                            ->label('Pekerjaan Ibu'),
+                        Forms\Components\Select::make('penghasilan_ibu_id')
+                            ->options(PenghasilanOrtu::orderBy('penghasilan')->get()->pluck('penghasilan', 'id'))
+                            ->native(false)
+                            ->label('Penghasilan Ibu'),
+                    ])
+                ]),
+                Forms\Components\Section::make('Data Wali')
+                ->schema([
+                    Forms\Components\TextInput::make('nm_wali')
+                    ->maxLength(100),
+                    Forms\Components\TextInput::make('no_hp_wali')
+                    ->maxLength(15),
+                    Grid::make(3)
+                    ->schema([
+                        Forms\Components\Select::make('pendidikan_wali_id')
+                            ->options(PendidikanOrtu::orderBy('jenjang_pendidikan')->get()->pluck('jenjang_pendidikan', 'id'))
+                            ->native(false)
+                            ->label('Pendidikan Wali'),
+                        Forms\Components\Select::make('pekerjaan_wali_id')
+                            ->options(PekerjaanOrtu::orderBy('nama_pekerjaan')->get()->pluck('nama_pekerjaan', 'id'))
+                            ->native(false)
+                            ->label('Pekerjaan Wali'),
+                        Forms\Components\Select::make('penghasilan_wali_id')
+                            ->options(PenghasilanOrtu::orderBy('penghasilan')->get()->pluck('penghasilan', 'id'))
+                            ->native(false)
+                            ->label('Penghasilan Wali'),
+                    ])
+                ]),
+            ])->columnSpan(2)->columns(2),
+            FormSection::make()
+            ->schema([
                 Forms\Components\FileUpload::make('foto_siswa')
                         ->image(['jpg', 'png'])
                         ->label('Foto Siswa')
                         ->disk('public')
-                        ->minSize(50)
-                        ->maxSize(5120)
+                        ->minSize(20)
+                        ->maxSize(2048)
                         ->openable()
                         ->directory('siswa')
                         ->removeUploadedFileButtonPosition('right')
@@ -185,18 +333,60 @@ class DataSiswaResource extends Resource
                                 $record->foto_siswa = null;
                                 $record->save();
                             }
-                        }),
-                Forms\Components\FileUpload::make('upload_ijazah_sd')
+                        })
+                        ->validationMessages([
+                            'file' => 'File harus berupa gambar.',
+                            'min' => 'Ukuran gambar terlalu kecil (minimal 1 MB).',
+                            'max' => 'Ukuran gambar terlalu besar (maksimal 2 MB).',
+                            'mimes' => 'Hanya file JPG atau PNG yang diperbolehkan.',
+                            'accepted' => 'Jenis file tidak didukung. Harus JPG atau PNG.',
+                        ]),
+                    Forms\Components\FileUpload::make('upload_ijazah_sd')
                         ->label('Ijazah SD')
                         ->disk('public')
-                        ->required()
-                        ->directory('ijazah_sd')
+                        ->visibility('private')
                         ->acceptedFileTypes(['application/pdf'])
+                        ->directory('ijazah_sd')
                         ->validationMessages([
-                                'required' => 'Ijazah SD wajib diisi',
+                            'acceptedFileTypes' => 'Wajib PDF',
+                        ]),
+                        Forms\Components\Select::make('status_id')
+                            ->label('Status Siswa')
+                            ->required()
+                            ->reactive() // penting agar bisa trigger perubahan field lain
+                            ->placeholder('Pilih Status Siswa')
+                            ->options(StatusSiswa::orderBy('status')->get()->pluck('status', 'id'))
+                            ->native(false)
+                            ->validationMessages([
+                                'required' => 'Status Siswa wajib dipilih',
+                            ]),
+                        Forms\Components\DatePicker::make('tanggal_keluar')
+                            ->label('Tanggal Keluar')
+                            ->native(false)
+                            ->displayFormat('d/m/Y')
+                            ->visible(function ($get) {
+                                $statusId = $get('status_id');
+                                $status = StatusSiswa::find($statusId)?->status;
+                                return in_array($status, ['Drop Out', 'Pindah', 'Cuti']);
+                            }),
+                        FormSection::make()
+                        ->collapsible()
+                        ->collapsed()
+                        ->label('Dokumen Pendukung dan Status')
+                        ->description('apabila status siswa aktif, maka dokumen pendukung tidak perlu diisi, apabila status siswa drop out, pindah atau cuti, maka dokumen pendukung perlu diisi')
+                        ->schema([
+                        Forms\Components\FileUpload::make('dokumen_pendukung')
+                            ->label('Dokumen Pendukung')
+                            ->disk('public')
+                            ->visibility('private')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('dokumen_pendukung')
+                            ->validationMessages([
+                                'acceptedFileTypes' => 'Wajib PDF',
                             ])
-                    ])->columnSpan(1)->columns(1),
-            ])->columns(3);
+                        ])
+                    ])->columnSpan(1),
+            ])->columns(3);            
     }
     public static function table(Table $table): Table
     {
@@ -248,11 +438,8 @@ class DataSiswaResource extends Resource
                                         ->alignLeft()
                                         ->color(fn ($state) => match ($state) {
                                             'Aktif' => 'success',
-                                            'Pindah' => 'warning',
-                                            'Lulus' => 'info',
-                                            'Cuti' => 'gray',
-                                            'Drop Out' => 'danger',
-                                            default => 'secondary',
+                                            'Lulus' => 'warning',
+                                            default => 'danger',
                                         })
                                         ->formatStateUsing(fn (?string $state): HtmlString => new HtmlString("<small>" . ($state ?? '-') . "</small>")),
                                         Tables\Columns\TextColumn::make('yatim_piatu')
@@ -381,6 +568,21 @@ class DataSiswaResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+
+            return parent::getEloquentQuery()
+            ->withoutGlobalScopes([SoftDeletingScope::class])
+            ->join('data_siswa', 'riwayat_kelas.data_siswa_id', '=', 'data_siswa.id')
+            ->join('status_siswa', 'data_siswa.status_id', '=', 'status_siswa.id')
+            ->where('status_siswa.status', 'aktif')
+            ->with([
+                'dataSiswa.pekerjaanAyah',
+                'dataSiswa.pendidikanAyah',
+                'dataSiswa.penghasilanAyah',
+                'kelas',
+                'pegawai',
+                'tahunAjaran',
+                'semester'
+            ]);
     }
 
     public static function infolist(Infolist $infolist): Infolist
@@ -393,19 +595,29 @@ class DataSiswaResource extends Resource
                             InfolistGrid::make(2)
                                 ->schema([
                                     InfolistGroup::make([
-                                        InfolistTextEntry::make('nama_siswa')
+                                            InfolistTextEntry::make('nama_siswa')
                                             ->label('Nama Siswa')
+                                            ->weight(FontWeight::Bold)
                                             ->color('gray'),
-                                        InfolistTextEntry::make('nik')
-                                            ->label('NIK')
-                                            ->color('gray'),
-                                        InfolistTextEntry::make('tempat_lahir')
-                                            ->label('Tempat Lahir')
-                                            ->color('gray'),
-                                        InfolistTextEntry::make('tanggal_lahir')
-                                            ->label('Tanggal Lahir')
+                                        InfolistGrid::make([
+                                            'md' => 3,
+                                        ])
+                                        ->schema([
+                                            InfolistTextEntry::make('virtual_account')
+                                            ->label('VA')
                                             ->badge()
-                                            ->date()
+                                            ->color('gray'),
+                                            InfolistTextEntry::make('statussiswa.status')
+                                            ->label('Status')
+                                            ->badge()
+                                            ->color(fn ($state) => match ($state) {
+                                                'Aktif' => 'success',
+                                                'Lulus' => 'warning',
+                                                default => 'danger',
+                                            }),
+                                        ]),
+                                        InfolistTextEntry::make('tempat_tanggal_lahir')
+                                            ->label('Tempat Tanggal Lahir')
                                             ->color('gray'),
                                         InfolistTextEntry::make('jenis_kelamin')
                                             ->label('Jenis Kelamin')
@@ -417,13 +629,38 @@ class DataSiswaResource extends Resource
                                                 };
                                             })
                                             ->color('gray'),
+                                            Fieldset::make('Nomor Identitas')
+                                            ->schema([
+                                                InfolistTextEntry::make('nis')
+                                            ->label('NIS')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('nisn')
+                                            ->label('NISN')
+                                            ->color('gray'),
+                                        InfolistTextEntry::make('nik')
+                                            ->label('NIK')
+                                            ->color('gray'),
+                                            ])->columns(3),
                                     ]),
                                     InfolistGroup::make([
                                         InfolistTextEntry::make('alamat_lengkap')
-                                            ->color('gray'),
-                                        InfolistTextEntry::make('no_hp')
-                                            ->color('gray'),
-                                        InfolistTextEntry::make('email')
+                                            ->label('Alamat')
+                                            ->color('gray')
+                                            ->icon('heroicon-m-map-pin'),
+                                            InfolistGrid::make([
+                                                'md' => 3,
+                                                ])
+                                            ->schema([
+                                                InfolistTextEntry::make('no_hp')
+                                                    ->icon('heroicon-m-phone')
+                                                    ->color('gray')
+                                                    ->label(false),
+                                                InfolistTextEntry::make('email')
+                                                    ->icon('heroicon-m-envelope')
+                                                    ->color('gray')
+                                                    ->label(false),
+                                            ]),
+                                        InfolistTextEntry::make('asal_sekolah_npsn')
                                             ->color('gray'),
                                     ]),
                                 ]),
@@ -434,18 +671,95 @@ class DataSiswaResource extends Resource
                                 ->height(160)
                         ])->from('md'),
                     ]),
-                InfolistSection::make('Riwayat Pendidikan')
+                InfolistSection::make('Data Orang Tua')
                     ->schema([
-                        InfolistTextEntry::make('nm_ayah')
-                            ->label('Nama Ayah')
-                            ->markdown()
-                            ->color('gray'),
-                        InfolistTextEntry::make('nm_ibu')
-                            ->label('Nama Ibu')
-                            ->markdown()
-                            ->color('gray'),
-                    ])
-                    ->collapsible(),
-        ]);
+                        InfolistSplit::make([
+                            InfolistGroup::make([
+                                InfolistTextEntry::make('nm_ayah')
+                                    ->label('Data Ayah')
+                                    ->color('gray')
+                                    ->weight(FontWeight::Bold),
+                                InfolistTextEntry::make('no_hp_ayah')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-phone'),
+                                InfolistTextEntry::make('pendidikanAyah.jenjang_pendidikan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-book-open'),
+                                InfolistTextEntry::make('pekerjaanAyah.nama_pekerjaan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-briefcase'),
+                                InfolistTextEntry::make('penghasilanAyah.penghasilan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-wallet'),
+                                ]),
+                                InfolistGroup::make([
+                                InfolistTextEntry::make('nm_ibu')
+                                    ->label('Data Ibu')
+                                    ->color('gray')
+                                    ->weight(FontWeight::Bold),
+                                    InfolistTextEntry::make('no_hp_ibu')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-phone'),
+                                InfolistTextEntry::make('pendidikanIbu.jenjang_pendidikan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-book-open'),
+                                InfolistTextEntry::make('pekerjaanIbu.nama_pekerjaan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-briefcase'),
+                                InfolistTextEntry::make('penghasilanIbu.penghasilan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-wallet'),
+                                ]),
+                                InfolistGroup::make([
+                                InfolistTextEntry::make('nm_wali')
+                                    ->label('Data Wali')
+                                    ->color('gray')
+                                    ->weight(FontWeight::Bold),
+                                    InfolistTextEntry::make('no_hp_wali')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-phone'),
+                                InfolistTextEntry::make('pendidikanWali.jenjang_pendidikan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-book-open'),
+                                InfolistTextEntry::make('pekerjaanWali.nama_pekerjaan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-briefcase'),
+                                InfolistTextEntry::make('penghasilanWali.penghasilan')
+                                    ->label(false)
+                                    ->color('gray')
+                                    ->icon('heroicon-m-wallet'),
+                                ])
+                        ])
+                        
+                    ])->collapsible(),
+                InfolistSection::make('Ijazah SD')
+                            ->collapsible()
+                            ->schema([
+                                PdfViewerEntry::make('upload_ijazah_sd')
+                                            ->label('View the PDF')
+                                            ->minHeight('70svh'),
+                                // FilamentPdfViewerEntry::make('upload_ijazah_sd')
+                                //     ->label('Ijazah SD')
+                                //     ->minHeight('40svh')
+                                //     ->notFoundMessage('Ijazah SD tidak tersedia')
+                                //     ->file(function ($record) {
+                                //         if ($record && $record->upload_ijazah_sd) {
+                                //             return route('siswa.ijazah', ['record' => $record->id]);
+                                //         }
+                                //         return null;
+                                //     }),
+                            ])
+                    ]);
 }
 }

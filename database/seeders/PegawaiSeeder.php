@@ -204,6 +204,13 @@ class PegawaiSeeder extends Seeder
                     'phone' => '081754329876',
                     'status' => true,
                 ],
+                [
+                    'npy' => '05000552',
+                    'nm_pegawai' => 'Ibmu Kausar, M.Pd.',
+                    'jenis_kelamin' => 'L',
+                    'phone' => '0895609982896',
+                    'status' => true,
+                ],
             ]);
         }
     }

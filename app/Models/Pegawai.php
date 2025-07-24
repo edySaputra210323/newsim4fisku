@@ -19,7 +19,7 @@ class Pegawai extends Model
         'jenis_kelamin',
         'alamat',
         'phone',
-        // 'email_pegawai',
+        'tgl_mulai_bekerja',
         'nuptk',
         'npy',
         'status',
