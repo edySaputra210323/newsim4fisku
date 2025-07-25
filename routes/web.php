@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\DataSiswa;
-use Illuminate\Support\Facades\Route;
+use App\Models\MutasiSiswa;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
@@ -30,3 +31,24 @@ Route::get('/siswa/ijazah/{record}', function ($record) {
     }
     abort(404, 'File tidak ditemukan');
 })->name('siswa.ijazah')->middleware('auth');
+
+Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
+    // Pastikan user sudah login
+    if (!Auth::check()) {
+        abort(403, 'Unauthorized');
+    }
+
+    // Ambil data mutasi
+    $mutasi = MutasiSiswa::findOrFail($record);
+
+    // Ambil path dokumen
+    $filePath = $mutasi->dokumen_mutasi;
+
+    // Cek apakah file ada di disk 'local'
+    if (Storage::disk('local')->exists($filePath)) {
+        return Storage::disk('local')->response($filePath);
+    }
+
+    // Jika file tidak ditemukan
+    abort(404, 'File tidak ditemukan');
+})->name('siswa.dokumen_mutasi')->middleware('auth');

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MutasiSiswa extends Model
 {
@@ -12,6 +13,11 @@ class MutasiSiswa extends Model
         'data_siswa_id',
         'tahun_ajaran_id',
         'semester_id',
+        'asal_sekolah',
+        'sekolah_tujuan',
+        'dokumen_mutasi',
+        'nomor_mutasi_masuk',
+        'nomor_mutasi_keluar',
         'tipe_mutasi',
         'tanggal_mutasi',
         'keterangan',
@@ -40,9 +46,23 @@ class MutasiSiswa extends Model
         return $this->belongsTo(Semester::class, 'semester_id');
     }
 
-    // Relasi ke DataSiswa (pindah)
-    public function dataSiswaPindah()
-    {
-        return $this->hasOne(DataSiswa::class, 'pindah_id');
+    public function getInfoMutasiAttribute(): string
+{
+    $tipe = strtolower($this->tipe_mutasi ?? '');
+
+    if ($tipe === 'masuk') {
+        $asal = $this->asal_sekolah ?: '-';
+        $nomor = $this->nomor_mutasi_masuk ?: '-';
+        return "{$asal} ({$nomor})";
     }
+
+    if ($tipe === 'keluar') {
+        $tujuan = $this->sekolah_tujuan ?: '-';
+        $nomor = $this->nomor_mutasi_keluar ?: '-';
+        return "{$tujuan} ({$nomor})";
+    }
+
+    return '-';
+}
+
 }
