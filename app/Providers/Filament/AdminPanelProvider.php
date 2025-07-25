@@ -21,6 +21,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use App\Filament\Admin\Widgets\JumlahSiswaPerAngkatanChart;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use SolutionForest\FilamentSimpleLightBox\SimpleLightBoxPlugin;
 
@@ -95,6 +96,10 @@ class AdminPanelProvider extends PanelProvider
                     ->timeSensitive(morningStart: 3, afternoonStart: 12, eveningStart: 15, nightStart: 18)
                     ->sort(-1)
                     ->columnSpan('full')
+                    
+            ])
+            ->widgets([
+                JumlahSiswaPerAngkatanChart::class,
             ])
             
             ->viteTheme('resources/css/filament/admin/theme.css')
