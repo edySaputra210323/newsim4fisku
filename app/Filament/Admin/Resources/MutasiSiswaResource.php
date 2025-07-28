@@ -76,6 +76,7 @@ class MutasiSiswaResource extends Resource
                             ->description('transaksional mutasi siswa masuk dan keluar')
                             ->icon('heroicon-m-user-group')
                             ->schema([
+                                // Field untuk memilih siswa, hanya siswa berstatus Aktif yang muncul
                                 Forms\Components\Select::make('data_siswa_id')
                                 ->label('Data Siswa')
                                 ->searchable()
@@ -88,17 +89,30 @@ class MutasiSiswaResource extends Resource
                                             $q->where('nama_siswa', 'like', "%{$search}%")
                                             ->orWhere('nis', 'like', "%{$search}%");
                                         })
-                                        ->whereHas('statussiswa', function ($query) {
+                                        ->whereHas('UpdateStatusSiswa', function ($query) {
                                             $query->where('status', 'Aktif');
                                         })
-                                        ->limit(50)
+                                        ->limit(50) // Batasi hasil untuk performa
                                         ->get()
                                         ->mapWithKeys(function ($siswa) {
+                                            // Format hasil pencarian: id => nama siswa (NIS)
                                             return [$siswa->id => $siswa->nama_siswa . ' (' . $siswa->nis . ')'];
                                         })
                                         ->toArray();
-                                }),
-
+                                })
+                                 // Validasi tambahan: pastikan siswa berstatus Aktif jika tipe mutasi adalah Keluar
+                                // Ini mendukung logika bahwa hanya siswa aktif yang bisa pindah (status diubah ke Pindah)
+                            ->rules([
+                                fn ($get) => function ($attribute, $value, $fail) use ($get) {
+                                    if ($get('tipe_mutasi') === 'Keluar') {
+                                        $siswa = DataSiswa::find($value);
+                                        if ($siswa && $siswa->UpdateStatusSiswa && $siswa->UpdateStatusSiswa->status !== 'Aktif') {
+                                            $fail('Siswa yang dipilih harus berstatus Aktif untuk mutasi keluar.');
+                                        }
+                                    }
+                                },
+                            ]),
+                        // Field untuk memilih tipe mutasi (Masuk/Keluar)
                             Forms\Components\Select::make('tipe_mutasi')
                             ->label('Tipe Mutasi')
                             ->disabled(!$isTahunAjaranActive || !$activeSemester)
@@ -108,8 +122,9 @@ class MutasiSiswaResource extends Resource
                             ])
                             ->required()
                             ->placeholder('Pilih Tipe Mutasi')
-                            ->reactive()
+                            ->reactive() // Membuat field ini reaktif untuk mengontrol visibilitas field lain
                             ->columnSpanFull(),
+                            // Grid untuk field terkait mutasi masuk
                         Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('asal_sekolah')

@@ -110,11 +110,11 @@ class DataSiswa extends Model
 
     public function getStatusAttribute(): string
     {
-        return $this->statussiswa?->aktif  ? 'Aktif'  :
-               ($this->statussiswa?->pindah ? 'Lulus' :
-               ($this->statussiswa?->pindah ? 'Pindah' :
-               ($this->statussiswa?->pindah ? 'Cuti' :
-               ($this->statussiswa?->lulus  ? 'Drop Out'  : '-'))));
+        return $this->UpdateStatusSiswa?->aktif  ? 'Aktif'  :
+               ($this->UpdateStatusSiswa?->pindah ? 'Lulus' :
+               ($this->UpdateStatusSiswa?->pindah ? 'Pindah' :
+               ($this->UpdateStatusSiswa?->pindah ? 'Cuti' :
+               ($this->UpdateStatusSiswa?->lulus  ? 'Drop Out'  : '-'))));
     }
 
     // Accessor untuk alamat
@@ -231,7 +231,7 @@ class DataSiswa extends Model
     }
 
     // Relasi ke StatusSiswa
-    public function statussiswa()
+    public function UpdateStatusSiswa()
     {
         return $this->belongsTo(StatusSiswa::class, 'status_id');
     }

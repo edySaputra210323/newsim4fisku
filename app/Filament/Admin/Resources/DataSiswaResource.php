@@ -431,7 +431,7 @@ class DataSiswaResource extends Resource
                                         ->searchable()
                                         ->formatStateUsing(fn (?string $state): HtmlString => new HtmlString("<small>NIK: " . ($state ?? '-') . "</small>")),
                                     Tables\Columns\Layout\Split::make([
-                                    Tables\Columns\TextColumn::make('statussiswa.status')
+                                    Tables\Columns\TextColumn::make('UpdateStatusSiswa.status')
                                         ->searchable()
                                         ->sortable()
                                         ->badge()
@@ -497,7 +497,7 @@ class DataSiswaResource extends Resource
 
             ->filters([
                     SelectFilter::make('status')
-                        ->relationship('statussiswa', 'status')
+                        ->relationship('UpdateStatusSiswa', 'status')
                         ->searchable()
                         ->preload()
                         ->label('Status siswa'),
@@ -607,7 +607,7 @@ class DataSiswaResource extends Resource
                                             ->label('VA')
                                             ->badge()
                                             ->color('gray'),
-                                            InfolistTextEntry::make('statussiswa.status')
+                                            InfolistTextEntry::make('UpdateStatusSiswa.status')
                                             ->label('Status')
                                             ->badge()
                                             ->color(fn ($state) => match ($state) {

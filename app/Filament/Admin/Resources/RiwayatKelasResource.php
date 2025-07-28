@@ -20,9 +20,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\RiwayatKelasResource\Pages;
 use App\Filament\Admin\Resources\RiwayatKelasResource\RelationManagers;
+use App\Filament\Admin\Resources\RiwayatKelasResource\Widgets\RiwayatKelasWidgets;
 
 class RiwayatKelasResource extends Resource
 {
+    public static function getWidgets(): array
+    {
+        return [
+            RiwayatKelasWidgets::class,
+        ];
+    }
+
     protected static ?string $model = RiwayatKelas::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -407,4 +415,5 @@ class RiwayatKelasResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
 }
