@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Models\Semester;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Semester;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\SuratKeluar;
@@ -21,6 +21,7 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Admin\Resources\SuratKeluarResource\Pages;
 use App\Filament\Admin\Resources\SuratKeluarResource\RelationManagers;
 
@@ -233,6 +234,9 @@ class SuratKeluarResource extends Resource
         }
 
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->orderBy('no_surat', 'desc');
+            })
             ->recordAction(null)
             ->recordUrl(null)
             ->extremePaginationLinks()

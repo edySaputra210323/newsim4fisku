@@ -42,8 +42,8 @@ class GedungSeeder extends Seeder
             ],
             [
                 'kode_gedung' => 'F',
-                'nama_gedung' => 'SMPIT & SMAIT IKHWAN',
-                'deskripsi_gedung' => 'Gedung SMPIT & SMAIT IKHWAN',
+                'nama_gedung' => 'SMPIT Ikhwan',
+                'deskripsi_gedung' => 'Gedung SMPIT Ikhwan',
             ],
             [
                 'kode_gedung' => 'G',

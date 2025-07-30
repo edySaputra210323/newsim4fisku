@@ -5,9 +5,14 @@ namespace Database\Seeders;
 use Closure;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Database\Seeders\GedungSeeder;
 use Database\Seeders\PegawaiSeeder;
+use Database\Seeders\RuanganSeeder;
 use Illuminate\Support\Facades\Artisan;
+use Database\Seeders\KategoriBarangSeeder;
+use Database\Seeders\SumberAnggaranSeeder;
 use Illuminate\Database\Eloquent\Collection;
+use Database\Seeders\KetegoriInventarisSeeder;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 class DatabaseSeeder extends Seeder
@@ -51,6 +56,11 @@ class DatabaseSeeder extends Seeder
             KelasSeeder::class,
             StatusSiswaSeeder::class,
             PegawaiSeeder::class,
+            GedungSeeder::class,
+            KategoriBarangSeeder::class,
+            SumberAnggaranSeeder::class,
+            KategoriInventarisSeeder::class,
+            RuanganSeeder::class,
         ]);
     }
 

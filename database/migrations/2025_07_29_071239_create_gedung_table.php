@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('kode_gedung')->nullable();
             $table->string('deskripsi_gedung')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

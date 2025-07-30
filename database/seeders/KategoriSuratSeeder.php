@@ -15,6 +15,7 @@ class KategoriSuratSeeder extends Seeder
     {
         $kategoriSurat = [
             ['kode_kategori' => 'ST', 'kategori' => 'SURAT TUGAS', 'deskripsi' => NULL, 'created_at' => now(), 'updated_at' => now()],
+            ['kode_kategori' => 'S.KA', 'kategori' => 'SURAT KUASA', 'deskripsi' => NULL, 'created_at' => now(), 'updated_at' => now()],
             ['kode_kategori' => 'SR', 'kategori' => 'SURAT REKOMENDASI', 'deskripsi' => NULL, 'created_at' => now(), 'updated_at' => now()],
             ['kode_kategori' => 'P', 'kategori' => 'PEMBERITAHUAN', 'deskripsi' => NULL, 'created_at' => now(), 'updated_at' => now()],
             ['kode_kategori' => 'U', 'kategori' => 'SURAT UNDANGAN', 'deskripsi' => NULL, 'created_at' => now(), 'updated_at' => now()],

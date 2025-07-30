@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Models\Gedung;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ruangan extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'ruangan';
 
     protected $fillable = [

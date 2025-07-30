@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Models\Ruangan;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Gedung extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'gedung';
 
     protected $fillable = [
@@ -15,7 +18,7 @@ class Gedung extends Model
         'deskripsi_gedung',
     ];
 
-    public function ruangan()
+    public function ruangans()
     {
         return $this->hasMany(Ruangan::class);
     }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('alamat_suplayer');
             $table->string('no_telp_suplayer');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

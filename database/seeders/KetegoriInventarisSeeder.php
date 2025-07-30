@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class KategoriInventarisSeeder extends Seeder
+class KetegoriInventarisSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,9 +15,9 @@ class KategoriInventarisSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['nama_kategori_inventaris' => 'ASET' , 'kode_kategori_inventaris' => 'A', 'deskripsi_kategori_inventaris' => 'Nilai besar, masa manfaat >1 tahun, dicatat sebagai aset'],
-            ['nama_kategori_inventaris' => 'INVENTARIS' , 'kode_kategori_inventaris' => 'B', 'deskripsi_kategori_inventaris' => 'Tidak habis pakai dengan cepat, dipakai ulang'],
-            ['nama_kategori_inventaris' => 'PERLENGKAPAN' , 'kode_kategori_inventaris' => 'C', 'deskripsi_kategori_inventaris' => 'Habis pakai, pembelian rutin'],
+            ["nama_kategori_inventaris" => "Aset", "kode_kategori_inventaris" => "A", "deskripsi_kategori_inventaris" => "Nilai besar, masa manfaat lebih dari 1 tahun, dicatat sebagai aset"],
+            ["nama_kategori_inventaris" => "Inventaris", "kode_kategori_inventaris" => "B", "deskripsi_kategori_inventaris" => "Tidak habis pakai dengan cepat, dipakai ulang, dicatat di KIB"],
+            ["nama_kategori_inventaris" => "Perlengkapan", "kode_kategori_inventaris" => "C", "deskripsi_kategori_inventaris" => "Habis pakai, pembelian rutin, dicatat sebagai biaya operasional"],
         ];
 
         foreach ($data as $item) {

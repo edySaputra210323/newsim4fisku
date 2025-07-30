@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('kode_kategori_inventaris');
             $table->string('deskripsi_kategori_inventaris')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

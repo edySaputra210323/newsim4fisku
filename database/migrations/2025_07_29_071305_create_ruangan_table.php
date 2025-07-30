@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('kode_ruangan')->nullable();
             $table->string('deskripsi_ruangan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
