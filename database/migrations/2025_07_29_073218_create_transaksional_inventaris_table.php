@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('transaksional_inventaris', function (Blueprint $table) {
             $table->id();
             $table->string('kode_inventaris')->unique();
+            $table->integer('no_urut_barang')->unique();
             $table->foreignId('kategori_inventaris_id')->constrained('kategori_inventaris')->cascadeOnDelete();
-            $table->foreignId('suplayer_id')->constrained('suplayer')->cascadeOnDelete();
+            $table->foreignId('suplayer_id')->nullable()->constrained('suplayer')->nullOnDelete();
             $table->foreignId('kategori_barang_id')->constrained('kategori_barang')->cascadeOnDelete();
             $table->foreignId('sumber_anggaran_id')->constrained('sumber_anggaran')->cascadeOnDelete();
             $table->foreignId('ruang_id')->constrained('ruangan')->cascadeOnDelete();

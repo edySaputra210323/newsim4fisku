@@ -3,9 +3,9 @@
 namespace App\Filament\Admin\Clusters\Master\Resources;
 
 use App\Filament\Admin\Clusters\Master;
-use App\Filament\Admin\Clusters\Master\Resources\KategoriInventarisResource\Pages;
-use App\Filament\Admin\Clusters\Master\Resources\KategoriInventarisResource\RelationManagers;
-use App\Models\KategoriInventaris;
+use App\Filament\Admin\Clusters\Master\Resources\KategoriBarangResource\Pages;
+use App\Filament\Admin\Clusters\Master\Resources\KategoriBarangResource\RelationManagers;
+use App\Models\KategoriBarang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,23 +14,23 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class KategoriInventarisResource extends Resource
+class KategoriBarangResource extends Resource
 {
-    protected static ?string $model = KategoriInventaris::class;
+    protected static ?string $model = KategoriBarang::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationGroup = 'Master Inventaris';
 
-    protected static ?string $navigationLabel = 'Kategori Inventaris';
+    protected static ?string $navigationLabel = 'Kategori Barang';
 
-    protected static ?string $modelLabel = 'Kategori Inventaris';
+    protected static ?string $modelLabel = 'Kategori Barang';
 
-    protected static ?string $pluralModelLabel = 'Kategori Inventaris';
+    protected static ?string $pluralModelLabel = 'Kategori Barang';
 
-    protected static ?string $slug = 'kategori-inventaris';
+    protected static ?string $slug = 'kategori-barang';
 
     protected static ?string $cluster = Master::class;
 
@@ -38,13 +38,13 @@ class KategoriInventarisResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_kategori_inventaris')
+                Forms\Components\TextInput::make('nama_kategori_barang')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('kode_kategori_inventaris')
+                Forms\Components\TextInput::make('kode_kategori_barang')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi_kategori_inventaris')
+                Forms\Components\TextInput::make('deskripsi_kategori_barang')
                     ->maxLength(255),
             ]);
     }
@@ -53,11 +53,11 @@ class KategoriInventarisResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_kategori_inventaris')
+                Tables\Columns\TextColumn::make('nama_kategori_barang')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('kode_kategori_inventaris')
+                Tables\Columns\TextColumn::make('kode_kategori_barang')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deskripsi_kategori_inventaris')
+                Tables\Columns\TextColumn::make('deskripsi_kategori_barang')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -98,10 +98,10 @@ class KategoriInventarisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKategoriInventaris::route('/'),
-            'create' => Pages\CreateKategoriInventaris::route('/create'),
-            'view' => Pages\ViewKategoriInventaris::route('/{record}'),
-            'edit' => Pages\EditKategoriInventaris::route('/{record}/edit'),
+            'index' => Pages\ListKategoriBarangs::route('/'),
+            'create' => Pages\CreateKategoriBarang::route('/create'),
+            'view' => Pages\ViewKategoriBarang::route('/{record}'),
+            'edit' => Pages\EditKategoriBarang::route('/{record}/edit'),
         ];
     }
 

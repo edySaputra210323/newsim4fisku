@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ruangan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('gedung_id')->nullable()->constrained('gedung')->nullOnDelete();
-            $table->string('nama_ruangan');
+            $table->string('nama_ruangan')->nullable();
             $table->string('kode_ruangan')->nullable();
             $table->string('deskripsi_ruangan')->nullable();
             $table->timestamps();

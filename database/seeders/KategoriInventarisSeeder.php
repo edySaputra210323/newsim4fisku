@@ -15,7 +15,7 @@ class KategoriInventarisSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['nama_kategori_inventaris' => 'ASET' , 'kode_kategori_inventaris' => 'A', 'deskripsi_kategori_inventaris' => 'Nilai besar, masa manfaat >1 tahun, dicatat sebagai aset'],
+            ['nama_kategori_inventaris' => 'ASET' , 'kode_kategori_inventaris' => 'A', 'deskripsi_kategori_inventaris' => 'Nilai besar, masa manfaat >1 tahun, dicatat sebagai aset'],
             ['nama_kategori_inventaris' => 'INVENTARIS' , 'kode_kategori_inventaris' => 'B', 'deskripsi_kategori_inventaris' => 'Tidak habis pakai dengan cepat, dipakai ulang'],
             ['nama_kategori_inventaris' => 'PERLENGKAPAN' , 'kode_kategori_inventaris' => 'C', 'deskripsi_kategori_inventaris' => 'Habis pakai, pembelian rutin'],
         ];

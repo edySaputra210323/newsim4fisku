@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Filament\Admin\Clusters\Master\Resources;
+namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Clusters\Master;
-use App\Filament\Admin\Clusters\Master\Resources\KategoriInventarisResource\Pages;
-use App\Filament\Admin\Clusters\Master\Resources\KategoriInventarisResource\RelationManagers;
-use App\Models\KategoriInventaris;
+use App\Filament\Admin\Resources\SuplayerResource\Pages;
+use App\Filament\Admin\Resources\SuplayerResource\RelationManagers;
+use App\Models\Suplayer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,37 +13,37 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class KategoriInventarisResource extends Resource
+class SuplayerResource extends Resource
 {
-    protected static ?string $model = KategoriInventaris::class;
+    protected static ?string $model = Suplayer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 2;
 
-    protected static ?string $navigationGroup = 'Master Inventaris';
+    protected static ?string $navigationGroup = 'Inventaris';
 
-    protected static ?string $navigationLabel = 'Kategori Inventaris';
+    protected static ?string $navigationLabel = 'Suplayer';
 
-    protected static ?string $modelLabel = 'Kategori Inventaris';
+    protected static ?string $modelLabel = 'Suplayer';
 
-    protected static ?string $pluralModelLabel = 'Kategori Inventaris';
+    protected static ?string $pluralModelLabel = 'Suplayer';
 
-    protected static ?string $slug = 'kategori-inventaris';
-
-    protected static ?string $cluster = Master::class;
+    protected static ?string $slug = 'suplayer';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_kategori_inventaris')
+                Forms\Components\TextInput::make('nama_suplayer')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('kode_kategori_inventaris')
+                Forms\Components\TextInput::make('alamat_suplayer')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi_kategori_inventaris')
+                Forms\Components\TextInput::make('no_telp_suplayer')
+                    ->tel()
+                    ->required()
                     ->maxLength(255),
             ]);
     }
@@ -53,11 +52,11 @@ class KategoriInventarisResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_kategori_inventaris')
+                Tables\Columns\TextColumn::make('nama_suplayer')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('kode_kategori_inventaris')
+                Tables\Columns\TextColumn::make('alamat_suplayer')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deskripsi_kategori_inventaris')
+                Tables\Columns\TextColumn::make('no_telp_suplayer')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -98,10 +97,10 @@ class KategoriInventarisResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListKategoriInventaris::route('/'),
-            'create' => Pages\CreateKategoriInventaris::route('/create'),
-            'view' => Pages\ViewKategoriInventaris::route('/{record}'),
-            'edit' => Pages\EditKategoriInventaris::route('/{record}/edit'),
+            'index' => Pages\ListSuplayers::route('/'),
+            'create' => Pages\CreateSuplayer::route('/create'),
+            'view' => Pages\ViewSuplayer::route('/{record}'),
+            'edit' => Pages\EditSuplayer::route('/{record}/edit'),
         ];
     }
 

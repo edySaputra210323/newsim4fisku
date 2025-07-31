@@ -24,8 +24,6 @@ class KategoriSuratResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $cluster = Master::class;
-
     protected static ?string $navigationLabel = 'Kategori Surat';
 
     protected static ?string $modelLabel = 'Kategori Surat';
@@ -33,6 +31,8 @@ class KategoriSuratResource extends Resource
     protected static ?string $pluralModelLabel = 'Kategori Surat';
 
     protected static ?string $slug = 'kategori-surat';
+
+    protected static ?string $cluster = Master::class;
 
     public static function form(Form $form): Form
     {
