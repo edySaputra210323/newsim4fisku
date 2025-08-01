@@ -2,6 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Ruangan;
+use App\Models\Semester;
+use App\Models\Suplayer;
+use App\Models\TahunAjaran;
+use App\Models\KategoriBarang;
+use App\Models\SumberAnggaran;
+use App\Models\KategoriInventaris;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,6 +49,16 @@ class TransaksionalInventaris extends Model
         'total_harga' => 'integer',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            // Pastikan total_harga sesuai dengan harga_satuan (karena jumlah_beli = 1)
+            $model->total_harga = $model->harga_satuan;
+        });
+    }
+
     public function kategoriInventaris()
     {
         return $this->belongsTo(KategoriInventaris::class);
@@ -64,7 +81,7 @@ class TransaksionalInventaris extends Model
 
     public function ruang()
     {
-        return $this->belongsTo(Ruang::class);
+        return $this->belongsTo(Ruangan::class);
     }
 
     public function thAjaran()
@@ -75,5 +92,29 @@ class TransaksionalInventaris extends Model
     public function semester()
     {
         return $this->belongsTo(Semester::class);
-    }   
+    }  
+    
+    // Helper method untuk menghasilkan base kode inventaris (opsional)
+    public static function generateBaseKodeInventaris($kategoriBarangId, $ruangId, $tanggalBeli)
+    {
+        // Ambil kode kategori barang
+        $kategoriBarang = KategoriBarang::find($kategoriBarangId);
+        $kodeKategori = $kategoriBarang ? $kategoriBarang->kode_kategori_barang : 'XXX';
+
+        // Ambil kode ruangan
+        $ruangan = Ruangan::find($ruangId);
+        $kodeRuangan = $ruangan ? $ruangan->kode_ruangan : 'XXX';
+
+        // Ambil tahun dari tanggal_beli
+        $tahun = $tanggalBeli ? date('Y', strtotime($tanggalBeli)) : date('Y');
+
+        // Ambil nomor urut terakhir
+        $lastRecord = self::withTrashed()->count();
+        $nomorUrut = str_pad($lastRecord + 1, 3, '0', STR_PAD_LEFT);
+
+        // Kode unit sekolah (hardcoded)
+        $kodeUnit = 'SMP';
+
+        return sprintf('%s/%s/%s/%s/%s', $nomorUrut, $kodeUnit, $kodeKategori, $kodeRuangan, $tahun);
+    }
 }
