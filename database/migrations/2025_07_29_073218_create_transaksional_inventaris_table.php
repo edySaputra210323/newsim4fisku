@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('jumlah_beli');
             $table->integer('harga_satuan');
             $table->integer('total_harga');
+            $table->string('kesehatan_barang')->nullable();
             $table->string('keterangan')->nullable();
             $table->string('foto_inventaris')->nullable();
             $table->string('nota_beli')->nullable();

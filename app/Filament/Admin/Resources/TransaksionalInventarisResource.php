@@ -246,39 +246,35 @@ class TransaksionalInventarisResource extends Resource
             ->columns([
                 Split::make([
                     ImageColumn::make('foto_inventaris')
-                        ->label('Foto')
+                        ->simpleLightbox()
                         ->height(120)
                         ->width(120)
                         ->extraImgAttributes(['style' => 'object-fit: cover; border-radius: 8px;']),
             
                     Stack::make([
                         TextColumn::make('nama_inventaris')
-                            ->label('Nama')
                             ->searchable()
                             ->sortable()
-                            ->weight('bold'),
+                            ->weight('bold')
+                            ->searchable(),
+                        TextColumn::make('kode_inventaris')
+                            ->badge()
+                            ->color('primary')
+                            ->searchable()
+                            ->weight('thin'),
                         TextColumn::make('kategoriInventaris.nama_kategori_inventaris')
-                            ->label('Kategori')
                             ->searchable()
                             ->sortable(),
-                        TextColumn::make('jumlah_beli')
-                            ->label('Jumlah')
-                            ->numeric(),
-                        TextColumn::make('harga_satuan')
-                            ->label('Harga')
-                            ->money('IDR'),
                         TextColumn::make('total_harga')
-                            ->label('Total')
-                            ->money('IDR'),
+                            ->money('IDR', locale: 'id_ID'),
                         TextColumn::make('tanggal_beli')
-                            ->label('Tanggal Beli')
-                            ->date(),
+                            ->date('d/m/Y'),
                     ]),
                 ]),
             ])
             ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
+                'md' => 3,
+                'xl' => 4,
             ])
                 // Tables\Columns\TextColumn::make('kode_inventaris')
                 //     ->searchable(),

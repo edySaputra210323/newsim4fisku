@@ -114,7 +114,17 @@ class CreateTransaksionalInventaris extends CreateRecord
 
         // Ambil nomor urut terakhir
         $lastRecord = TransaksionalInventaris::withTrashed()->count();
-        $nomorUrut = str_pad($lastRecord + 1, 3, '0', STR_PAD_LEFT);
+        if ($lastRecord >= 999) {
+            Notification::make()
+                ->title('Peringatan')
+                ->body('Jumlah barang telah mencapai atau melebihi 999. Silakan atur ulang sistem atau perpanjang format nomor urut.')
+                ->warning()
+                ->persistent()
+                ->send();
+            $this->halt();
+        }
+        $nomorUrut = str_pad($lastRecord + 1, 4, '0', STR_PAD_LEFT);
+
 
         // Kode unit sekolah
         $kodeUnit = 'SMP';
@@ -126,8 +136,10 @@ class CreateTransaksionalInventaris extends CreateRecord
 
         // Buat entri sebanyak jumlah_beli
         for ($i = 1; $i <= $jumlahBeli; $i++) {
+            // Hapus suffix jika jumlah_beli hanya 1
+            $kodeInventaris = $jumlahBeli == 1 ? $baseKodeInventaris : $baseKodeInventaris . '-' . $i;
             $records[] = TransaksionalInventaris::create([
-                'kode_inventaris' => $baseKodeInventaris . '-' . $i,
+                'kode_inventaris' => $kodeInventaris,
                 'no_urut_barang' => $lastRecord + $i,
                 'kategori_inventaris_id' => $data['kategori_inventaris_id'],
                 'suplayer_id' => $data['suplayer_id'] ?? null,

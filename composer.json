@@ -9,6 +9,7 @@
         "awcodes/filament-table-repeater": "^3.1",
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-shield": "^3.3",
+        "dompdf/dompdf": "^3.1",
         "eightynine/filament-excel-import": "^3.1",
         "filament/filament": "^3.2",
         "filament/infolists": "^3.3",
@@ -18,6 +19,7 @@
         "laravel/tinker": "^2.9",
         "leandrocfe/filament-apex-charts": "dev-master",
         "oriondevelops/filament-greeter": "^0.2.2",
+        "picqer/php-barcode-generator": "^3.2",
         "solution-forest/filament-simplelightbox": "^0.0.11"
     },
     "require-dev": {
