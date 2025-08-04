@@ -13,7 +13,7 @@
         }
         .label {
             width: 200px;
-            height: 250px;
+            height: 250px; /* Tingkatkan tinggi untuk menampung detail */
             border: 2px solid #000;
             background-color: #fff;
             margin: 10px;
@@ -25,7 +25,7 @@
             border-radius: 5px;
         }
         .barcode-img {
-            max-width: 150px;
+            max-width: 150px; /* Ukuran QR Code lebih kecil agar ada ruang untuk detail */
             max-height: 150px;
             height: auto;
             margin-bottom: 10px;
@@ -43,12 +43,12 @@
         }
         .detail-table td:first-child {
             font-weight: bold;
-            width: 50px;
+            width: 50px; /* Lebar untuk label */
             color: #333;
         }
         .detail-table td:last-child {
-            width: 100px;
-            color: #555;
+            width: 100px; /* Lebar untuk nilai */
+            color: #555555;
         }
         .header {
             font-size: 10px;
@@ -63,14 +63,9 @@
         <div class="label">
             <div class="header">SMPIT AL-FITYAN KUBU RAYA</div>
             <?php
-                // Tambahkan data lebih lengkap ke QR Code
-                $qrData = 'Kode: ' . $record->kode_inventaris . "\n" .
-                          'Nama: ' . $record->nama_inventaris . "\n" .
-                          'Tanggal Beli: ' . $record->tanggal_beli->format('d/m/Y') . "\n" .
-                          'Ruang: ' . ($record->ruang->nama_ruangan ?? 'N/A');
-                // Gunakan format PNG untuk kompatibilitas lebih baik
-                $qrCode = QrCode::size(150)->format('png')->encoding('UTF-8')->generate($qrData);
-                $qrCodeBase64 = 'data:image/png;base64,' . base64_encode($qrCode);
+                // Gunakan QrCode facade untuk menghasilkan QR Code
+                $qrCode = QrCode::size(100)->generate($record->kode_inventaris);
+                $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
             ?>
             <img src="{{ $qrCodeBase64 }}" class="barcode-img">
             <table class="detail-table">
