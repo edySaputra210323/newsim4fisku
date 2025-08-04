@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Dompdf\Dompdf;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Ruangan;
@@ -15,12 +16,14 @@ use Filament\Resources\Resource;
 use App\Models\KategoriInventaris;
 use App\Models\TransaksionalInventaris;
 use Filament\Tables\Columns\TextColumn;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Filament\Forms\Components\Grid as FormGrid;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Section as formSection;
@@ -257,14 +260,16 @@ class TransaksionalInventarisResource extends Resource
                             ->sortable()
                             ->weight('bold')
                             ->searchable(),
-                        TextColumn::make('kode_inventaris')
-                            ->badge()
-                            ->color('primary')
-                            ->searchable()
-                            ->weight('thin'),
+                        // TextColumn::make('kode_inventaris')
+                        //     ->badge()
+                        //     ->color('primary')
+                        //     ->searchable()
+                            // ->weight('thin'),
                         TextColumn::make('kategoriInventaris.nama_kategori_inventaris')
                             ->searchable()
                             ->sortable(),
+                        TextColumn::make('ruang.nama_ruangan')
+                            ->searchable(),
                         TextColumn::make('total_harga')
                             ->money('IDR', locale: 'id_ID'),
                         TextColumn::make('tanggal_beli')
@@ -273,8 +278,8 @@ class TransaksionalInventarisResource extends Resource
                 ]),
             ])
             ->contentGrid([
-                'md' => 3,
-                'xl' => 4,
+                'md' => 2,
+                'xl' => 3,
             ])
                 // Tables\Columns\TextColumn::make('kode_inventaris')
                 //     ->searchable(),
@@ -337,6 +342,24 @@ class TransaksionalInventarisResource extends Resource
             // ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\SelectFilter::make('kategori_inventaris_id')
+                    ->label('Kategori Inventaris')
+                    ->options(KategoriInventaris::pluck('nama_kategori_inventaris', 'id')),
+                Tables\Filters\SelectFilter::make('ruang_id')
+                    ->label('Ruang')
+                    ->options(Ruangan::pluck('nama_ruangan', 'id')),
+                Tables\Filters\Filter::make('tanggal_beli')
+                    ->form([
+                        Forms\Components\DatePicker::make('tanggal_dari')
+                            ->label('Dari Tanggal'),
+                        Forms\Components\DatePicker::make('tanggal_sampai')
+                            ->label('Sampai Tanggal'),
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query
+                            ->when($data['tanggal_dari'], fn ($query) => $query->where('tanggal_beli', '>=', $data['tanggal_dari']))
+                            ->when($data['tanggal_sampai'], fn ($query) => $query->where('tanggal_beli', '<=', $data['tanggal_sampai']));
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -347,6 +370,14 @@ class TransaksionalInventarisResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\BulkAction::make('exportLabels')
+                        ->label('Export Label Barcode')
+                        ->action(function (Collection $records) {
+                            return self::exportBarcodeLabels($records);
+                        })
+                        ->modalHeading('Export Label Barcode')
+                        ->modalSubmitActionLabel('Export PDF')
+                        ->color('success'),
                 ]),
             ]);
     }
@@ -388,5 +419,22 @@ class TransaksionalInventarisResource extends Resource
     
         // Atur nilai total_harga
         $set('total_harga', $total);
+    }
+
+    protected static function exportBarcodeLabels($records)
+    {
+        $dompdf = new Dompdf();
+
+        $html = view('pdf.barcode-labels', [
+            'records' => $records,
+        ])->render();
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response()->streamDownload(function () use ($dompdf) {
+            echo $dompdf->output();
+        }, 'barcode-labels-' . now()->format('YmdHis') . '.pdf');
     }
 }

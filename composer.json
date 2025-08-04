@@ -19,7 +19,7 @@
         "laravel/tinker": "^2.9",
         "leandrocfe/filament-apex-charts": "dev-master",
         "oriondevelops/filament-greeter": "^0.2.2",
-        "picqer/php-barcode-generator": "^3.2",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "solution-forest/filament-simplelightbox": "^0.0.11"
     },
     "require-dev": {
