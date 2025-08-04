@@ -135,6 +135,7 @@ class TransaksionalInventarisResource extends Resource
                             ->label('Jumlah Beli')
                             ->required()
                             ->numeric()
+                            ->disabled(fn (string $operation) => $operation === 'edit')
                             ->minValue(1)
                             ->maxValue(1000)
                             ->live(onBlur: true)
@@ -423,18 +424,18 @@ class TransaksionalInventarisResource extends Resource
 
     protected static function exportBarcodeLabels($records)
     {
-        $dompdf = new Dompdf();
+            $dompdf = new Dompdf();
 
-        $html = view('pdf.barcode-labels', [
-            'records' => $records,
-        ])->render();
+            $html = view('pdf.barcode-labels', [
+                'records' => $records,
+            ])->render();
 
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+            $dompdf->loadHtml($html);
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
 
-        return response()->streamDownload(function () use ($dompdf) {
-            echo $dompdf->output();
-        }, 'barcode-labels-' . now()->format('YmdHis') . '.pdf');
+            return response()->streamDownload(function () use ($dompdf) {
+                echo $dompdf->output();
+            }, 'barcode-labels-' . now()->format('YmdHis') . '.pdf');
     }
 }
