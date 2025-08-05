@@ -5,6 +5,7 @@ use App\Models\MutasiSiswa;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\InventarisController;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.auth.login');
@@ -51,4 +52,6 @@ Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
 
     // Jika file tidak ditemukan
     abort(404, 'File tidak ditemukan');
-})->name('siswa.dokumen_mutasi')->middleware('auth');
+    })->name('siswa.dokumen_mutasi')->middleware('auth');
+
+    Route::get('/inventaris/{kode_inventaris}', [InventarisController::class, 'show']);

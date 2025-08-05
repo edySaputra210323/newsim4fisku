@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Kelas;
 use App\Models\Semester;
 use Filament\Forms\Form;
 use App\Models\DataSiswa;
@@ -100,18 +101,31 @@ class MutasiSiswaResource extends Resource
                                         })
                                         ->toArray();
                                 })
+                                ->getOptionLabelUsing(function ($value): ?string {
+                                    $siswa = \App\Models\DataSiswa::find($value);
+                            
+                                    return $siswa ? "{$siswa->nama_siswa} ({$siswa->nis})" : null;
+                                })
                                  // Validasi tambahan: pastikan siswa berstatus Aktif jika tipe mutasi adalah Keluar
                                 // Ini mendukung logika bahwa hanya siswa aktif yang bisa pindah (status diubah ke Pindah)
-                            ->rules([
-                                fn ($get) => function ($attribute, $value, $fail) use ($get) {
-                                    if ($get('tipe_mutasi') === 'Keluar') {
-                                        $siswa = DataSiswa::find($value);
-                                        if ($siswa && $siswa->UpdateStatusSiswa && $siswa->UpdateStatusSiswa->status !== 'Aktif') {
-                                            $fail('Siswa yang dipilih harus berstatus Aktif untuk mutasi keluar.');
+                                ->rules([
+                                    fn ($get, $context) => function ($attribute, $value, $fail) use ($get, $context) {
+                                        if ($context === 'create' && $get('tipe_mutasi') === 'Keluar') {
+                                            $siswa = \App\Models\DataSiswa::find($value);
+                                            if ($siswa && $siswa->UpdateStatusSiswa && $siswa->UpdateStatusSiswa->status !== 'Aktif') {
+                                                $fail('Siswa yang dipilih harus berstatus Aktif untuk mutasi keluar.');
+                                            }
                                         }
-                                    }
-                                },
-                            ]),
+                                    },
+                                ]),
+                            Forms\Components\Select::make('kelas_id')
+                            ->label('Kelas yang ditinggalkan / Kelas tujuan')
+                            ->disabled(!$isTahunAjaranActive || !$activeSemester)
+                            ->options(Kelas::all()->pluck('nama_kelas', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpanFull(),
                         // Field untuk memilih tipe mutasi (Masuk/Keluar)
                             Forms\Components\Select::make('tipe_mutasi')
                             ->label('Tipe Mutasi')
@@ -253,6 +267,10 @@ class MutasiSiswaResource extends Resource
                 Tables\Columns\TextColumn::make('tanggal_mutasi')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('kelas.nama_kelas')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Kelas'),
                 Tables\Columns\TextColumn::make('info_mutasi')
                     ->label('Info Mutasi')
                     ->searchable()
@@ -260,13 +278,12 @@ class MutasiSiswaResource extends Resource
                 // Tables\Columns\TextColumn::make('dokumen_mutasi')
                 //     ->searchable(),
                 Tables\Columns\IconColumn::make('dokumen_mutasi')
-                    ->label('Dokumen Mutasi')
-                    ->default('-')
-                    ->url(fn (MutasiSiswa $record): ?string => filled($record->dokumen_mutasi) ? route('siswa.dokumen_mutasi', $record->id) : null)
-                    ->openUrlInNewTab()
-                    ->icon(fn (string $state): ?string => filled($state) ? 'heroicon-o-document-text' : null)
-                    ->color('primary')
-                    ->tooltip(fn (string $state): ?string => filled($state) ? 'Lihat Dokumen' : 'Tidak Ada Dokumen'),
+                ->label('Dokumen Mutasi')
+                ->icon(fn ($record) => filled($record->dokumen_mutasi) ? 'heroicon-o-document-text' : 'heroicon-o-x-circle')
+                ->color(fn ($record) => filled($record->dokumen_mutasi) ? 'primary' : 'gray')
+                ->tooltip(fn ($record) => filled($record->dokumen_mutasi) ? 'Lihat Dokumen' : 'Tidak Ada Dokumen')
+                ->url(fn ($record) => filled($record->dokumen_mutasi) ? route('siswa.dokumen_mutasi', $record->id) : null)
+                ->openUrlInNewTab(fn ($record) => filled($record->dokumen_mutasi)),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

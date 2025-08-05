@@ -63,9 +63,11 @@
         <div class="label">
             <div class="header">SMPIT AL-FITYAN KUBU RAYA</div>
             <?php
-                // Gunakan QrCode facade untuk menghasilkan QR Code
-                $qrCode = QrCode::size(100)->generate($record->kode_inventaris);
-                $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+            $ip = '192.168.100.163'; // Ganti dengan IP lokal PC kamu
+            $port = '8000'; // Sesuaikan dengan port Laravel kamu
+            $url = "http://{$ip}:{$port}/inventaris/{$record->kode_inventaris}";
+            $qrCode = QrCode::size(100)->generate($url);
+            $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
             ?>
             <img src="{{ $qrCodeBase64 }}" class="barcode-img">
             <table class="detail-table">

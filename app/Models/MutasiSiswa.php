@@ -13,6 +13,7 @@ class MutasiSiswa extends Model
         'data_siswa_id',
         'tahun_ajaran_id',
         'semester_id',
+        'kelas_id',
         'asal_sekolah',
         'sekolah_tujuan',
         'dokumen_mutasi',
@@ -44,6 +45,11 @@ class MutasiSiswa extends Model
     public function semester()
     {
         return $this->belongsTo(Semester::class, 'semester_id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
     public function getInfoMutasiAttribute(): string
