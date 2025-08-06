@@ -130,7 +130,8 @@ class CreateTransaksionalInventaris extends CreateRecord
         $kodeUnit = 'SMP';
 
         // Base kode inventaris
-        $baseKodeInventaris = sprintf('%s/%s/%s/%s/%s', $nomorUrut, $kodeUnit, $kodeKategori, $kodeRuangan, $tahun);
+        $baseKodeInventaris = sprintf('%s-%s-%s-%s-%s', $nomorUrut, $kodeUnit, $kodeKategori, $kodeRuangan, $tahun);
+        $kodeInventaris = $jumlahBeli == 1 ? $baseKodeInventaris : $baseKodeInventaris . '-' . $i;
 
         $records = [];
 

@@ -63,9 +63,9 @@
         <div class="label">
             <div class="header">SMPIT AL-FITYAN KUBU RAYA</div>
             <?php
-            $ip = '192.168.100.163'; // Ganti dengan IP lokal PC kamu
+            $ip = '127.0.0.1'; // Ganti dengan IP lokal PC kamu
             $port = '8000'; // Sesuaikan dengan port Laravel kamu
-            $url = "http://{$ip}:{$port}/inventaris/{$record->kode_inventaris}";
+            $url = "http://127.0.0.1:8000/inventaris/" . urlencode($record->kode_inventaris);
             $qrCode = QrCode::size(100)->generate($url);
             $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
             ?>

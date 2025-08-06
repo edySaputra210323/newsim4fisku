@@ -10,6 +10,7 @@ use App\Models\KategoriBarang;
 use App\Models\SumberAnggaran;
 use App\Models\KategoriInventaris;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -56,6 +57,29 @@ class TransaksionalInventaris extends Model
         static::saving(function ($model) {
             // Pastikan total_harga sesuai dengan harga_satuan (karena jumlah_beli = 1)
             $model->total_harga = $model->harga_satuan;
+        });
+
+         // Event deleting
+         static::deleting(function ($inventaris) {
+            // Hapus file foto_inventaris dari storage
+            if ($inventaris->foto_inventaris) {
+                try {
+                    Storage::disk('public')->delete($inventaris->foto_inventaris);
+                    \Log::info("File foto inventaris dihapus: {$inventaris->foto_inventaris}");
+                } catch (\Exception $e) {
+                    \Log::warning("Gagal menghapus file foto inventaris: {$inventaris->foto_inventaris}, Error: {$e->getMessage()}");
+                }
+            }
+
+            // Hapus file nota_beli dari storage
+            if ($inventaris->nota_beli) {
+                try {
+                    Storage::disk('public')->delete($inventaris->nota_beli);
+                    \Log::info("File nota beli dihapus: {$inventaris->nota_beli}");
+                } catch (\Exception $e) {
+                    \Log::warning("Gagal menghapus file nota beli: {$inventaris->nota_beli}, Error: {$e->getMessage()}");
+                }
+            }
         });
     }
 

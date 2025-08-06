@@ -200,12 +200,26 @@ class TransaksionalInventarisResource extends Resource
                 formSection::make('Foto Barang dan Nota Beli')
                     ->columns(2)
                     ->schema([
-                Forms\Components\FileUpload::make('foto_inventaris')
-                ->label('Foto Barang')
-                ->image(),
-                Forms\Components\FileUpload::make('nota_beli')
-                ->label('Nota Beli')
-                ->image(),
+                    Forms\Components\FileUpload::make('foto_inventaris')
+                        ->label('Foto Barang')
+                        ->image()
+                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                        ->maxSize(2048) // 2MB in kilobytes
+                        ->directory('public/foto_inventaris')
+                        ->validationMessages([
+                            'acceptedFileTypes' => 'Foto barang harus berupa file JPG, JPEG, atau PNG.',
+                            'maxSize' => 'Ukuran foto barang tidak boleh melebihi 2MB.',
+                        ]),
+                    Forms\Components\FileUpload::make('nota_beli')
+                        ->label('Nota Beli')
+                        ->image()
+                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
+                        ->maxSize(2048) // 2MB in kilobytes
+                        ->directory('public/foto_nota_beli')
+                        ->validationMessages([
+                            'acceptedFileTypes' => 'Nota beli harus berupa file JPG, JPEG, atau PNG.',
+                            'maxSize' => 'Ukuran nota beli tidak boleh melebihi 2MB.',
+                        ]),
                     ])->columnSpan(1)->columns(1),
                 
             ])->columns(3);

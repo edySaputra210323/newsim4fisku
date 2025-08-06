@@ -14,18 +14,22 @@ class EditPegawai extends EditRecord
 {
     protected static string $resource = PegawaiResource::class;
 
-    protected function beforeSave(): void
+    protected function mutateFormDataBeforeSave(array $data): array
     {
-        $data = $this->form->getState();
-
+        // Validasi password dan username
         if (isset($data['create_user_account']) && $data['create_user_account']) {
-            // Validasi password dan konfirmasi kalo password diisi
             if (isset($data['password']) && $data['password'] !== $data['password_confirmation']) {
                 throw ValidationException::withMessages([
                     'password_confirmation' => ['Konfirmasi kata sandi tidak cocok'],
                 ]);
             }
+            if (empty($data['username_pegawai'])) {
+                throw ValidationException::withMessages([
+                    'username_pegawai' => ['Username wajib diisi saat membuat atau mengedit akun pengguna'],
+                ]);
+            }
         }
+        return $data;
     }
 
     protected function afterSave(): void
@@ -38,6 +42,7 @@ class EditPegawai extends EditRecord
                     // Update user existing
                     $userData = [
                         'name' => $data['nm_pegawai'],
+                        'username' => $data['username_pegawai'], // Pastikan username diupdate
                         'email' => $data['user_email'],
                     ];
                     if (isset($data['password']) && $data['password']) {
@@ -45,18 +50,17 @@ class EditPegawai extends EditRecord
                     }
                     $this->record->user->update($userData);
                 } else {
-                    // Bikin user baru
+                    // Buat user baru
                     $user = User::create([
                         'name' => $data['nm_pegawai'],
+                        'username' => $data['username_pegawai'], // Pastikan username diisi
                         'email' => $data['user_email'],
                         'password' => Hash::make($data['password']),
                     ]);
                     $this->record->update(['user_id' => $user->id]);
-                    // Optional: Assign role
-                    // $user->assignRole('pegawai');
                 }
             } elseif ($this->record->user && (!isset($data['create_user_account']) || !$data['create_user_account'])) {
-                // Hapus user kalo toggle dimatiin
+                // Hapus user jika toggle dimatikan
                 $this->record->user->delete();
                 $this->record->update(['user_id' => null]);
             }
