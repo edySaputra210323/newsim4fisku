@@ -130,38 +130,37 @@ class CreateTransaksionalInventaris extends CreateRecord
         $kodeUnit = 'SMP';
 
         // Base kode inventaris
-        $baseKodeInventaris = sprintf('%s-%s-%s-%s-%s', $nomorUrut, $kodeUnit, $kodeKategori, $kodeRuangan, $tahun);
-        $kodeInventaris = $jumlahBeli == 1 ? $baseKodeInventaris : $baseKodeInventaris . '-' . $i;
+$baseKodeInventaris = sprintf('%s-%s-%s-%s-%s', $nomorUrut, $kodeUnit, $kodeKategori, $kodeRuangan, $tahun);
 
-        $records = [];
+$records = [];
 
-        // Buat entri sebanyak jumlah_beli
-        for ($i = 1; $i <= $jumlahBeli; $i++) {
-            // Hapus suffix jika jumlah_beli hanya 1
-            $kodeInventaris = $jumlahBeli == 1 ? $baseKodeInventaris : $baseKodeInventaris . '-' . $i;
-            $records[] = TransaksionalInventaris::create([
-                'kode_inventaris' => $kodeInventaris,
-                'no_urut_barang' => $lastRecord + $i,
-                'kategori_inventaris_id' => $data['kategori_inventaris_id'],
-                'suplayer_id' => $data['suplayer_id'] ?? null,
-                'kategori_barang_id' => $data['kategori_barang_id'],
-                'sumber_anggaran_id' => $data['sumber_anggaran_id'] ?? null,
-                'ruang_id' => $data['ruang_id'],
-                'nama_inventaris' => $data['nama_inventaris'],
-                'merk_inventaris' => $data['merk_inventaris'] ?? null,
-                'material_bahan' => $data['material_bahan'] ?? null,
-                'kondisi' => $data['kondisi'],
-                'tanggal_beli' => $data['tanggal_beli'],
-                'jumlah_beli' => 1,
-                'harga_satuan' => $hargaSatuan,
-                'total_harga' => $hargaSatuan,
-                'keterangan' => $data['keterangan'] ?? null,
-                'foto_inventaris' => $data['foto_inventaris'] ?? null,
-                'nota_beli' => $data['nota_beli'] ?? null,
-                'th_ajaran_id' => $data['th_ajaran_id'],
-                'semester_id' => $data['semester_id'],
-            ]);
-        }
+// Buat entri sebanyak jumlah_beli
+for ($i = 1; $i <= $jumlahBeli; $i++) {
+    // Tentukan kodeInventaris di dalam loop
+    $kodeInventaris = $jumlahBeli == 1 ? $baseKodeInventaris : $baseKodeInventaris . '-' . $i;
+    $records[] = TransaksionalInventaris::create([
+        'kode_inventaris' => $kodeInventaris,
+        'no_urut_barang' => $lastRecord + $i,
+        'kategori_inventaris_id' => $data['kategori_inventaris_id'],
+        'suplayer_id' => $data['suplayer_id'] ?? null,
+        'kategori_barang_id' => $data['kategori_barang_id'],
+        'sumber_anggaran_id' => $data['sumber_anggaran_id'] ?? null,
+        'ruang_id' => $data['ruang_id'],
+        'nama_inventaris' => $data['nama_inventaris'],
+        'merk_inventaris' => $data['merk_inventaris'] ?? null,
+        'material_bahan' => $data['material_bahan'] ?? null,
+        'kondisi' => $data['kondisi'],
+        'tanggal_beli' => $data['tanggal_beli'],
+        'jumlah_beli' => 1,
+        'harga_satuan' => $hargaSatuan,
+        'total_harga' => $hargaSatuan,
+        'keterangan' => $data['keterangan'] ?? null,
+        'foto_inventaris' => $data['foto_inventaris'] ?? null,
+        'nota_beli' => $data['nota_beli'] ?? null,
+        'th_ajaran_id' => $data['th_ajaran_id'],
+        'semester_id' => $data['semester_id'],
+    ]);
+}
 
         return end($records);
     }
