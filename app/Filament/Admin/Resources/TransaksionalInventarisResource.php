@@ -104,6 +104,7 @@ class TransaksionalInventarisResource extends Resource
                 Forms\Components\Select::make('kategori_inventaris_id')
                     ->options(KategoriInventaris::orderBy('nama_kategori_inventaris')->get()->pluck('nama_kategori_inventaris', 'id'))
                     ->native(false)
+                    ->default(2)
                     ->label('Kategori Inventaris'),
                 Forms\Components\Select::make('suplayer_id')
                     ->options(Suplayer::orderBy('nama_suplayer')->get()->pluck('nama_suplayer', 'id'))
@@ -127,6 +128,10 @@ class TransaksionalInventarisResource extends Resource
                 Forms\Components\TextInput::make('material_bahan')
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('tanggal_beli')
+                    ->default(now())
+                    ->displayFormat('d F Y') // Format untuk tampilan di form (e.g., 22 Agustus 2025)
+                    ->format('Y-m-d') // Format yang akan disimpan di database (disarankan)
+                    ->native(false)
                     ->required(),
                 FormGrid::make(3)
                     ->schema([

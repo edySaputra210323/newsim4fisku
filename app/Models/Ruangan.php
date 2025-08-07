@@ -15,6 +15,7 @@ class Ruangan extends Model
     protected $fillable = [
         'gedung_id',
         'nama_ruangan',
+        'lantai',
         'kode_ruangan',
         'deskripsi_ruangan',
     ];

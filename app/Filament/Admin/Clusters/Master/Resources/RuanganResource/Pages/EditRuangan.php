@@ -10,6 +10,11 @@ class EditRuangan extends EditRecord
 {
     protected static string $resource = RuanganResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

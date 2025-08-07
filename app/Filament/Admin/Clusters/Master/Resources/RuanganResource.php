@@ -2,17 +2,18 @@
 
 namespace App\Filament\Admin\Clusters\Master\Resources;
 
-use App\Filament\Admin\Clusters\Master;
-use App\Filament\Admin\Clusters\Master\Resources\RuanganResource\Pages;
-use App\Filament\Admin\Clusters\Master\Resources\RuanganResource\RelationManagers;
-use App\Models\Ruangan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Ruangan;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
+use App\Filament\Admin\Clusters\Master;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Admin\Clusters\Master\Resources\RuanganResource\Pages;
+use App\Filament\Admin\Clusters\Master\Resources\RuanganResource\RelationManagers;
 
 class RuanganResource extends Resource
 {
@@ -38,16 +39,36 @@ class RuanganResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('gedung_id')
+                Section::make()
+                ->schema([
+                    Forms\Components\Select::make('gedung_id')
                     ->relationship('gedung', 'nama_gedung')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Forms\Components\TextInput::make('nama_ruangan')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('lantai')
+                    ->options([
+                        '1' => 'Lantai 1',
+                        '2' => 'Lantai 2',
+                        '3' => 'Lantai 3',
+                        '4' => 'Lantai 4',
+                        '5' => 'Lantai 5',
+                        '6' => 'Lantai 6',
+                        '7' => 'Lantai 7',
+                        '8' => 'Lantai 8',
+                        '9' => 'Lantai 9',
+                        '10' => 'Lantai 10',
+                    ])
+                    ->native(false),
                 Forms\Components\TextInput::make('kode_ruangan')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi_ruangan')
+                Forms\Components\Textarea::make('deskripsi_ruangan')
+                    ->rows(3)
                     ->maxLength(255),
+                ]),
             ]);
     }
 
@@ -58,12 +79,16 @@ class RuanganResource extends Resource
                 Tables\Columns\TextColumn::make('gedung.nama_gedung')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('lantai')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('nama_ruangan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('kode_ruangan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deskripsi_ruangan')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
