@@ -68,6 +68,9 @@
             $url = "http://127.0.0.1:8000/inventaris/" . urlencode($record->kode_inventaris);
             $qrCode = QrCode::size(100)->generate($url);
             $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+            // $url = env('APP_URL') . '/inventaris/' . urlencode($record->kode_inventaris);
+            // $qrCode = QrCode::size(100)->generate($url);
+            // $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCode);
             ?>
             <img src="{{ $qrCodeBase64 }}" class="barcode-img">
             <table class="detail-table">

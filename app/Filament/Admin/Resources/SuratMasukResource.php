@@ -179,6 +179,9 @@ class SuratMasukResource extends Resource
         }
 
         return $table
+        ->modifyQueryUsing(function (Builder $query) {
+            return $query->orderBy('tgl_terima', 'desc');
+        })
             ->recordAction(null)
             ->recordUrl(null)
             ->extremePaginationLinks()

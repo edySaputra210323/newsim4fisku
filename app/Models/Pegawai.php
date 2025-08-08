@@ -113,4 +113,9 @@ protected static function boot()
     {
         return $this->hasMany(TrainingPegawai::class);
     }
+
+    public function inventaris()
+    {
+        return $this->hasMany(TransaksionalInventaris::class);
+    }
 }

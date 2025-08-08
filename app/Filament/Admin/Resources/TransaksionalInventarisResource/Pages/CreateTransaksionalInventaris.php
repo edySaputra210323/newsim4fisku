@@ -51,18 +51,7 @@ class CreateTransaksionalInventaris extends CreateRecord
         // Validasi input
         $jumlahBeli = (int) ($data['jumlah_beli'] ?: 1);
         $hargaSatuan = (int) str_replace(['.', 'Rp ', ','], '', $data['harga_satuan'] ?: '0');
-        $totalHarga = (int) str_replace(['.', 'Rp ', ','], '', $data['total_harga'] ?: '0');
-
-        // Validasi total_harga
-        if ($totalHarga !== $jumlahBeli * $hargaSatuan) {
-            Notification::make()
-                ->title('Error')
-                ->body('Total harga tidak valid. Harus sesuai dengan jumlah beli x harga satuan.')
-                ->danger()
-                ->persistent()
-                ->send();
-            $this->halt();
-        }
+        // $totalHarga = (int) str_replace(['.', 'Rp ', ','], '', $data['total_harga'] ?: '0');
 
         // Validasi batas
         if ($jumlahBeli < 1 || $jumlahBeli > 1000) {
@@ -151,12 +140,14 @@ for ($i = 1; $i <= $jumlahBeli; $i++) {
         'material_bahan' => $data['material_bahan'] ?? null,
         'kondisi' => $data['kondisi'],
         'tanggal_beli' => $data['tanggal_beli'],
-        'jumlah_beli' => 1,
+        'jumlah_beli' => $jumlahBeli,
         'harga_satuan' => $hargaSatuan,
-        'total_harga' => $hargaSatuan,
+        'total_harga' => $hargaSatuan, // Harga satuan per unit
         'keterangan' => $data['keterangan'] ?? null,
         'foto_inventaris' => $data['foto_inventaris'] ?? null,
         'nota_beli' => $data['nota_beli'] ?? null,
+        'jenis_penggunaan' => $data['jenis_penggunaan'],
+        'pegawai_id' => $data['pegawai_id'] ?? null,
         'th_ajaran_id' => $data['th_ajaran_id'],
         'semester_id' => $data['semester_id'],
     ]);

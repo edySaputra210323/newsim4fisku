@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use Dompdf\Dompdf;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Pegawai;
 use App\Models\Ruangan;
 use App\Models\Suplayer;
 use Filament\Forms\Form;
@@ -14,6 +15,8 @@ use App\Models\KategoriBarang;
 use App\Models\SumberAnggaran;
 use Filament\Resources\Resource;
 use App\Models\KategoriInventaris;
+use Illuminate\Support\HtmlString;
+use Filament\Support\Enums\FontWeight;
 use App\Models\TransaksionalInventaris;
 use Filament\Tables\Columns\TextColumn;
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -198,19 +201,43 @@ class TransaksionalInventarisResource extends Resource
                             ]),
                     ]),
 
+                    FormSection::make()
+                        ->schema([
+        Forms\Components\Select::make('jenis_penggunaan')
+            ->label('Jenis Penggunaan')
+            ->options([
+                'mobile' => 'Mobile (Bisa Dipinjam)',
+                'tetap' => 'Tetap (Dipakai Pegawai/Guru)',
+                'permanen' => 'Permanen (Dipasang Tetap)',
+            ])
+            ->native(false)
+            ->required()
+            ->reactive() // Penting supaya perubahan langsung terdeteksi
+            ->columnSpanFull(),
+
+        Forms\Components\Select::make('pegawai_id')
+            ->label('Pengguna Tetap')
+            ->options(fn () => Pegawai::pluck('nm_pegawai', 'id'))
+            ->native(false)
+            ->required(fn ($get) => $get('jenis_penggunaan') === 'tetap')
+            ->visible(fn ($get) => $get('jenis_penggunaan') === 'tetap')
+            ->columnSpanFull(),
+    ])->columnSpan(2)->columns(2),
                 Forms\Components\Textarea::make('keterangan')
                     ->maxLength(255)
                     ->columnSpanFull(),
                     ])->columnSpan(2)->columns(2),
-                formSection::make('Foto Barang dan Nota Beli')
-                    ->columns(2)
-                    ->schema([
+                    FormSection::make('Foto Barang dan Nota Beli')
+                ->columns(2)
+                ->schema([
                     Forms\Components\FileUpload::make('foto_inventaris')
                         ->label('Foto Barang')
                         ->image()
                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
-                        ->maxSize(2048) // 2MB in kilobytes
+                        ->maxSize(2048)
                         ->directory('public/foto_inventaris')
+                        ->preserveFilenames()
+                        ->required(false)
                         ->validationMessages([
                             'acceptedFileTypes' => 'Foto barang harus berupa file JPG, JPEG, atau PNG.',
                             'maxSize' => 'Ukuran foto barang tidak boleh melebihi 2MB.',
@@ -219,13 +246,17 @@ class TransaksionalInventarisResource extends Resource
                         ->label('Nota Beli')
                         ->image()
                         ->acceptedFileTypes(['image/jpeg', 'image/png'])
-                        ->maxSize(2048) // 2MB in kilobytes
+                        ->maxSize(2048)
                         ->directory('public/foto_nota_beli')
+                        ->preserveFilenames()
+                        ->required(false)
                         ->validationMessages([
                             'acceptedFileTypes' => 'Nota beli harus berupa file JPG, JPEG, atau PNG.',
                             'maxSize' => 'Ukuran nota beli tidak boleh melebihi 2MB.',
                         ]),
-                    ])->columnSpan(1)->columns(1),
+                ])
+                ->columnSpan(1)
+                ->columns(1),
                 
             ])->columns(3);
     }
@@ -253,54 +284,96 @@ class TransaksionalInventarisResource extends Resource
                 ->persistent()
                 ->send();
         }
-
         return $table
-            ->recordAction(null)
-            ->recordUrl(null)
-            ->extremePaginationLinks()
-            ->paginated([5, 10, 20, 50])
-            ->defaultPaginationPageOption(10)
-            ->striped()
-            ->poll('5s')
-            ->recordClasses(function () {
-                $classes = 'table-vertical-align-top ';
-                return $classes;
-            })
-            ->columns([
-                Split::make([
-                    ImageColumn::make('foto_inventaris')
-                        ->simpleLightbox()
-                        ->height(120)
-                        ->width(120)
-                        ->extraImgAttributes(['style' => 'object-fit: cover; border-radius: 8px;']),
-            
-                    Stack::make([
-                        TextColumn::make('nama_inventaris')
-                            ->searchable()
-                            ->sortable()
-                            ->weight('bold')
-                            ->searchable(),
-                        // TextColumn::make('kode_inventaris')
-                        //     ->badge()
-                        //     ->color('primary')
-                        //     ->searchable()
-                            // ->weight('thin'),
-                        TextColumn::make('kategoriInventaris.nama_kategori_inventaris')
-                            ->searchable()
-                            ->sortable(),
-                        TextColumn::make('ruang.nama_ruangan')
-                            ->searchable(),
-                        TextColumn::make('total_harga')
-                            ->money('IDR', locale: 'id_ID'),
-                        TextColumn::make('tanggal_beli')
-                            ->date('d/m/Y'),
-                    ]),
-                ]),
-            ])
-            ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
-            ])
+        ->modifyQueryUsing(function (Builder $query) {
+            return $query->orderBy('id', 'desc');
+        })
+        ->extremePaginationLinks()
+        ->recordUrl(null)
+        ->paginated([5, 10, 20, 50])
+        ->defaultPaginationPageOption(10)
+        ->striped()
+        ->recordClasses(function () {
+            $classes = 'table-vertical-align-top ';
+            return $classes;
+        })
+        ->columns([
+            ImageColumn::make('foto_inventaris')
+                ->simpleLightbox()
+                ->size(50)
+                ->extraImgAttributes(['style' => 'object-fit: cover; border-radius: 8px;'])
+                ->label('Images'),
+            ImageColumn::make('nota_beli')
+                ->simpleLightbox()
+                ->size(50)
+                ->extraImgAttributes(['style' => 'object-fit: cover; border-radius: 8px;'])
+                ->label('Nota Beli')
+                ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('nama_inventaris')
+                ->searchable(['nama_inventaris', 'kode_inventaris'])
+                ->weight(FontWeight::Bold)
+                ->wrap()
+                ->label('Nama Barang')
+                ->description(function ($record) {
+                    $data = '';
+                    if (!empty($record->kode_inventaris)) {
+                        $data .= '<small>Kode : ' . $record->kode_inventaris . '</small>';
+                    }
+                    if (!empty($record->tanggal_beli)) {
+                        if ($data != '') $data .= '<br>';
+                        $data .= '<small>Tgl Beli : ' . $record->tanggal_beli->format('d/m/Y') . '</small>';
+                    }
+                    return new HtmlString($data);
+                }),
+            Tables\Columns\TextColumn::make('jenis_penggunaan')
+                ->searchable()
+                ->badge()
+                ->color(function ($state) {
+                    return match ($state) {
+                        'tetap' => 'warning',   // kuning
+                        'mobile' => 'success',  // hijau
+                        'permanen' => 'danger', // merah
+                        default => 'secondary', // default abu
+                    };
+                })
+                ->label('Jenis Penggunaan')
+                ->description(fn ($record) => $record->pengguna?->nm_pegawai ? 'Nama : ' . $record->pengguna->nm_pegawai : null),
+            Tables\Columns\TextColumn::make('kondisi')
+                ->searchable()
+                ->label('Kondisi Saat Beli'),
+            Tables\Columns\TextColumn::make('jumlah_beli')
+                ->searchable()
+                ->label('QTY'),
+            Tables\Columns\TextColumn::make('harga_satuan')
+                ->searchable()
+                ->label('Harga Satuan')
+                ->money('IDR', locale: 'id_ID'),
+            Tables\Columns\TextColumn::make('ruang.nama_ruangan')
+                ->sortable()
+                ->label('Ruangan'),
+            Tables\Columns\TextColumn::make('tanggal_beli')
+                ->date('d/m/Y')
+                ->sortable()
+                ->since()
+                ->label('Usia Barang')
+                ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('keterangan')
+                ->searchable()
+                ->label('Keterangan')
+                ->wrap()
+                ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('sumberAnggaran.nama_sumber_anggaran')
+                ->searchable()
+                ->label('Sumber Anggaran'),
+            Tables\Columns\TextColumn::make('created_at')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            Tables\Columns\TextColumn::make('updated_at')
+                ->dateTime()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+        ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('kategori_inventaris_id')
@@ -323,8 +396,19 @@ class TransaksionalInventarisResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->iconButton()
+                    ->color('warning')
+                    ->icon('heroicon-m-pencil-square'),
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->color('danger')
+                    ->icon('heroicon-m-trash')
+                    ->modalHeading('Hapus Inventaris'),
+                Tables\Actions\ViewAction::make()
+                ->iconButton()
+                    ->color('primary')
+                    ->icon('heroicon-m-eye'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pegawai;
 use App\Models\Ruangan;
 use App\Models\Semester;
 use App\Models\Suplayer;
@@ -39,6 +40,8 @@ class TransaksionalInventaris extends Model
         'keterangan',
         'foto_inventaris',
         'nota_beli',
+        'jenis_penggunaan',
+        'pegawai_id',
         'th_ajaran_id',
         'semester_id',
     ];
@@ -52,35 +55,49 @@ class TransaksionalInventaris extends Model
 
     protected static function boot()
     {
-        parent::boot();
+                parent::boot();
 
-        static::saving(function ($model) {
-            // Pastikan total_harga sesuai dengan harga_satuan (karena jumlah_beli = 1)
-            $model->total_harga = $model->harga_satuan;
-        });
-
-         // Event deleting
-         static::deleting(function ($inventaris) {
-            // Hapus file foto_inventaris dari storage
-            if ($inventaris->foto_inventaris) {
-                try {
-                    Storage::disk('public')->delete($inventaris->foto_inventaris);
-                    \Log::info("File foto inventaris dihapus: {$inventaris->foto_inventaris}");
-                } catch (\Exception $e) {
-                    \Log::warning("Gagal menghapus file foto inventaris: {$inventaris->foto_inventaris}, Error: {$e->getMessage()}");
+            // Event deleting untuk menghapus file saat record dihapus
+            static::deleting(function ($inventaris) {
+                if ($inventaris->foto_inventaris) {
+                    try {
+                        Storage::disk('public')->delete($inventaris->foto_inventaris);
+                        \Log::info("File foto inventaris dihapus: {$inventaris->foto_inventaris}");
+                    } catch (\Exception $e) {
+                        \Log::warning("Gagal menghapus file foto inventaris: {$inventaris->foto_inventaris}, Error: {$e->getMessage()}");
+                    }
                 }
-            }
 
-            // Hapus file nota_beli dari storage
-            if ($inventaris->nota_beli) {
-                try {
-                    Storage::disk('public')->delete($inventaris->nota_beli);
-                    \Log::info("File nota beli dihapus: {$inventaris->nota_beli}");
-                } catch (\Exception $e) {
-                    \Log::warning("Gagal menghapus file nota beli: {$inventaris->nota_beli}, Error: {$e->getMessage()}");
+                if ($inventaris->nota_beli) {
+                    try {
+                        Storage::disk('public')->delete($inventaris->nota_beli);
+                        \Log::info("File nota beli dihapus: {$inventaris->nota_beli}");
+                    } catch (\Exception $e) {
+                        \Log::warning("Gagal menghapus file nota beli: {$inventaris->nota_beli}, Error: {$e->getMessage()}");
+                    }
                 }
-            }
-        });
+            });
+
+            // Event updating untuk menghapus file lama hanya jika ada file baru
+            static::updating(function ($inventaris) {
+                if ($inventaris->isDirty('foto_inventaris') && $inventaris->getOriginal('foto_inventaris')) {
+                    try {
+                        Storage::disk('public')->delete($inventaris->getOriginal('foto_inventaris'));
+                        \Log::info("File foto inventaris lama dihapus: {$inventaris->getOriginal('foto_inventaris')}");
+                    } catch (\Exception $e) {
+                        \Log::warning("Gagal menghapus file foto inventaris lama: {$inventaris->getOriginal('foto_inventaris')}, Error: {$e->getMessage()}");
+                    }
+                }
+
+                if ($inventaris->isDirty('nota_beli') && $inventaris->getOriginal('nota_beli')) {
+                    try {
+                        Storage::disk('public')->delete($inventaris->getOriginal('nota_beli'));
+                        \Log::info("File nota beli lama dihapus: {$inventaris->getOriginal('nota_beli')}");
+                    } catch (\Exception $e) {
+                        \Log::warning("Gagal menghapus file nota beli lama: {$inventaris->getOriginal('nota_beli')}, Error: {$e->getMessage()}");
+                    }
+                }
+            });
     }
 
     public function kategoriInventaris()
@@ -91,6 +108,12 @@ class TransaksionalInventaris extends Model
     public function suplayer()
     {
         return $this->belongsTo(Suplayer::class);
+    }
+
+
+    public function pengguna()
+    {
+        return $this->belongsTo(Pegawai::class, 'pegawai_id');
     }
 
     public function kategoriBarang()
