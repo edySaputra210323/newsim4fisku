@@ -37,6 +37,14 @@ class TransaksionalInventarisResource extends Resource
 {
     protected static ?string $model = TransaksionalInventaris::class;
 
+    public static function rules(): array
+    {
+        return [
+            'foto_inventaris' => ['nullable', 'image', 'max:2048', 'mimes:jpeg,png,jpg,webp'],
+            'nota_beli'       => ['nullable', 'image', 'max:2048', 'mimes:jpeg,png,jpg,webp'],
+        ];
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?int $navigationSort = 1;
@@ -160,17 +168,17 @@ class TransaksionalInventarisResource extends Resource
                                 'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')",
                                 'style' => 'text-align: right',
                             ]),
-                        Forms\Components\TextInput::make('harga_satuan')
+                            Forms\Components\TextInput::make('harga_satuan')
                             ->label('Harga Satuan')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(1000000000) // Batas maksimum Rp 1 miliar
                             ->prefix('Rp ')
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
+                            ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))  // Ubah mask: decimal ',', thousands '.', precision 0 (no decimal)
+                            ->stripCharacters(',')  // Ini OK, karena kita strip koma (jika ada desimal salah input)
                             ->live(onBlur: true)
-                            ->formatStateUsing(fn ($state) => $state ? 'Rp ' . number_format($state, 0, ',', '.') : null)
+                            ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', '.') : null)  // Hapus 'Rp ' di sini, karena prefix sudah handle
                             ->dehydrateStateUsing(fn ($state) => (int) str_replace(['.', 'Rp ', ','], '', $state ?: '0'))
                             ->validationMessages([
                                 'required' => 'Harga satuan wajib diisi',
@@ -185,16 +193,17 @@ class TransaksionalInventarisResource extends Resource
                                 'oninput' => "this.value = this.value.replace(/[^0-9]/g, '')",
                                 'style' => 'text-align: right',
                             ]),
+                        
                         Forms\Components\TextInput::make('total_harga')
                             ->label('Total Harga')
                             ->required()
                             ->numeric()
                             ->prefix('Rp ')
-                            ->mask(RawJs::make('$money($input)'))
+                            ->mask(RawJs::make('$money($input, \',\', \'.\', 0)'))  // Sama, ubah mask biar konsisten (walaupun readOnly)
                             ->stripCharacters(',')
                             ->readOnly()
                             ->dehydrated(true)  
-                            ->formatStateUsing(fn ($state) => $state ? 'Rp ' . number_format($state, 0, ',', '.') : null)
+                            ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', '.') : null)  // Hapus 'Rp ' di sini juga
                             ->dehydrateStateUsing(fn ($state) => (int) str_replace(['.', 'Rp ', ','], '', $state ?: '0'))
                             ->extraInputAttributes([
                                 'style' => 'text-align: right',
@@ -231,29 +240,22 @@ class TransaksionalInventarisResource extends Resource
                 ->columns(2)
                 ->schema([
                     Forms\Components\FileUpload::make('foto_inventaris')
-                        ->label('Foto Barang')
-                        ->image()
-                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
-                        ->maxSize(2048)
-                        ->directory('public/foto_inventaris')
-                        ->preserveFilenames()
-                        ->required(false)
-                        ->validationMessages([
-                            'acceptedFileTypes' => 'Foto barang harus berupa file JPG, JPEG, atau PNG.',
-                            'maxSize' => 'Ukuran foto barang tidak boleh melebihi 2MB.',
-                        ]),
-                    Forms\Components\FileUpload::make('nota_beli')
-                        ->label('Nota Beli')
-                        ->image()
-                        ->acceptedFileTypes(['image/jpeg', 'image/png'])
-                        ->maxSize(2048)
-                        ->directory('public/foto_nota_beli')
-                        ->preserveFilenames()
-                        ->required(false)
-                        ->validationMessages([
-                            'acceptedFileTypes' => 'Nota beli harus berupa file JPG, JPEG, atau PNG.',
-                            'maxSize' => 'Ukuran nota beli tidak boleh melebihi 2MB.',
-                        ]),
+                ->label('Foto Inventaris')
+                ->image() // auto validasi gambar
+                ->directory('public/foto_inventaris')
+                ->preserveFilenames()
+                ->maxSize(2048) // 2 MB
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/webp'])
+                ->required(false),
+
+            Forms\Components\FileUpload::make('nota_beli')
+                ->label('Nota Beli')
+                ->image()
+                ->directory('public/foto_nota_beli')
+                ->preserveFilenames()
+                ->maxSize(2048)
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/webp'])
+                ->required(false),      
                 ])
                 ->columnSpan(1)
                 ->columns(1),

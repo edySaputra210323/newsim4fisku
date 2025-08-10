@@ -80,23 +80,23 @@ class TransaksionalInventaris extends Model
 
             // Event updating untuk menghapus file lama hanya jika ada file baru
             static::updating(function ($inventaris) {
-                if ($inventaris->isDirty('foto_inventaris') && $inventaris->getOriginal('foto_inventaris')) {
-                    try {
-                        Storage::disk('public')->delete($inventaris->getOriginal('foto_inventaris'));
-                        \Log::info("File foto inventaris lama dihapus: {$inventaris->getOriginal('foto_inventaris')}");
-                    } catch (\Exception $e) {
-                        \Log::warning("Gagal menghapus file foto inventaris lama: {$inventaris->getOriginal('foto_inventaris')}, Error: {$e->getMessage()}");
-                    }
+                if (
+                    $inventaris->isDirty('foto_inventaris') &&
+                    $inventaris->foto_inventaris !== null &&
+                    $inventaris->foto_inventaris !== $inventaris->getOriginal('foto_inventaris')
+                ) {
+                    Storage::disk('public')->delete($inventaris->getOriginal('foto_inventaris'));
                 }
 
-                if ($inventaris->isDirty('nota_beli') && $inventaris->getOriginal('nota_beli')) {
-                    try {
-                        Storage::disk('public')->delete($inventaris->getOriginal('nota_beli'));
-                        \Log::info("File nota beli lama dihapus: {$inventaris->getOriginal('nota_beli')}");
-                    } catch (\Exception $e) {
-                        \Log::warning("Gagal menghapus file nota beli lama: {$inventaris->getOriginal('nota_beli')}, Error: {$e->getMessage()}");
-                    }
+
+                if (
+                    $inventaris->isDirty('nota_beli') &&
+                    $inventaris->nota_beli !== null &&
+                    $inventaris->nota_beli !== $inventaris->getOriginal('nota_beli')
+                ) {
+                    Storage::disk('public')->delete($inventaris->getOriginal('nota_beli'));
                 }
+                
             });
     }
 
