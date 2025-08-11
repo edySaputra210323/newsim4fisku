@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\InventarisController;
+use App\Http\Controllers\DataSiswaPublicController;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.auth.login');
@@ -55,3 +56,5 @@ Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
     })->name('siswa.dokumen_mutasi')->middleware('auth');
 
     Route::get('/inventaris/{kode_inventaris}', [InventarisController::class, 'show']);
+
+    Route::get('/siswa/{nis}', [DataSiswaPublicController::class, 'show'])->name('siswa.show');

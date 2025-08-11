@@ -536,6 +536,13 @@ class DataSiswaResource extends Resource
                 ->icon('heroicon-m-trash'),
                 ])
                 ->bulkActions([
+                    Tables\Actions\BulkAction::make('cetak_qrcode')
+                    ->label('Cetak QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->action(function ($records) {
+                        return response()->view('siswa.qrcode_bulk', ['records' => $records]);
+                    })
+                    ->openUrlInNewTab(),
                     Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
