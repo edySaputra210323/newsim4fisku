@@ -123,11 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    // 'providers' => [
-    // Barryvdh\DomPDF\ServiceProvider::class,
-    // ],
-    // 'aliases' => [
-    //     'Pdf' => Barryvdh\DomPDF\Facade\Pdf::class,
-    // ],
+// 'providers' => [
+//     // ...
+//     Barryvdh\DomPDF\ServiceProvider::class,
+//     SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+// ],
+// 'aliases' => [
+//     // ...
+//     'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+//     'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+// ],
 
 ];

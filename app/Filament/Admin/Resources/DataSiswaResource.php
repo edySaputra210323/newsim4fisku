@@ -536,13 +536,19 @@ class DataSiswaResource extends Resource
                 ->icon('heroicon-m-trash'),
                 ])
                 ->bulkActions([
-                    Tables\Actions\BulkAction::make('cetak_qrcode')
-                    ->label('Cetak QR Code')
-                    ->icon('heroicon-o-qr-code')
+                    Tables\Actions\BulkAction::make('export_qrcode_pdf')
+                    ->label('Export QR Code PDF')
+                    ->icon('heroicon-o-document-arrow-down')
                     ->action(function ($records) {
-                        return response()->view('siswa.qrcode_bulk', ['records' => $records]);
-                    })
-                    ->openUrlInNewTab(),
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('siswa.qr_bulk_pdf', ['records' => $records])
+                            ->setPaper('a4', 'portrait')
+                            ->setOption('isRemoteEnabled', true)
+                            ->setOption('isHtml5ParserEnabled', true)
+                            ->setOption('isPhpEnabled', true);
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->output();
+                        }, 'label-siswa-qr.pdf');
+                    }),
                     Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),

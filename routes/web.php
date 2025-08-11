@@ -5,6 +5,7 @@ use App\Models\MutasiSiswa;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\InventarisController;
 use App\Http\Controllers\DataSiswaPublicController;
 
@@ -57,4 +58,9 @@ Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
 
     Route::get('/inventaris/{kode_inventaris}', [InventarisController::class, 'show']);
 
-    Route::get('/siswa/{nis}', [DataSiswaPublicController::class, 'show'])->name('siswa.show');
+    // Route::get('/siswa/cetak-qrcode-siswa', [DataSiswaPublicController::class, 'cetakQrcode'])
+    // ->name('siswa.cetak_qrcode');
+    Route::controller(SiswaController::class)->group(function () {
+        Route::get('/siswa/{nis}', 'show')->name('siswa.show');
+        Route::post('/siswa/generate-qr-pdf', 'generateQrPdf')->name('siswa.generate_qr_pdf');
+    });
