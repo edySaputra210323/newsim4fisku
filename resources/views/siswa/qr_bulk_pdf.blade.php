@@ -21,7 +21,7 @@
             page-break-inside: avoid;
     
             /* Background PNG */
-            background-image: url('{{ public_path("background_kartu.png") }}');
+            background-image: url('{{ public_path("images/idcardSiswa/background_kartu.png") }}');
             background-size: cover; /* Penuhi kartu */
             background-position: center; /* Posisikan di tengah */
             background-repeat: no-repeat; /* Jangan diulang */
@@ -31,9 +31,9 @@
             padding: 0;
             display: flex;
             flex-direction: row; /* Ubah ke column agar school-info di bawah logo */
-            align-items: center; /* Sejajarkan secara horizontal ke tengah */
+            align-items: flex-start; /* teks dan logo sejajar bagian atas */
             background: rgba(253, 253, 253, 0.85);
-            color: #0188ff;
+            color: #0062d3;
             border-radius: 6px;
             border: 1px solid #83808027;
         }
@@ -47,10 +47,10 @@
         .logo img {
             padding-right: 5px;
             padding-left: 8px;
-            padding-top: 10px;
+            padding-top: 15px;
             padding-bottom: 0;
-            height: 50px;
-            width: 50px;
+            height: 60px;
+            width: 60px;
         }
 
         .school-info {
@@ -59,6 +59,7 @@
             margin: 0; /* Beri jarak atas agar tidak terlalu rapat */
             padding: 0;
             text-align: center; /* Teks judul dan alamat ditengah */
+            margin-top: -4px; /* naikkan teks tanpa mengganggu logo */
         }
 
         .school-info h1,
@@ -68,17 +69,19 @@
         }
 
         .school-info h1 {
-            font-size: 14px;
+            margin-top: -22px; /* naik sedikit */ 
+            font-size: 16px;
             font-weight: bold;
             line-height: 1; /* rapatkan */
         }
 
         .school-info p {
-            font-size: 8px;
+            margin-top: -28px; /* alamat ikut naik */
+            font-size: 10px;
             line-height: 1;
         }
         .content {
-            padding: 4px;
+            padding: 0px 4px 4px 4px;
             font-size: 9px;
         }
         .photo {
@@ -94,28 +97,62 @@
             display: block;
         }
         .nama {
-            margin: 10px 0 10px 0;
+            text-transform: uppercase;
+            margin: 7px 0 10px 0;
             font-size: 10px;
         }
         .details p {
             margin: 0;
             font-size: 9px;
         }
+
         .footer {
-            position: absolute;
-            bottom: 4px;
-            left: 4px;
-            right: 4px;
-            text-align: center;
-            font-size: 8px;
-            background: rgba(255,255,255,0.5); /* Biar teks kaki terbaca */
-        }
-        .ttd {
-            height: 40px;
-            width: 40px;
-            margin-top: -18px;
-            margin-bottom: -20px;
-        }
+    position: absolute;
+    bottom: -5px; /* naikkan dari -18px ke 2px */
+    left: 4px;
+    right: 4px;
+    text-align: center;
+    font-size: 8px;
+    background: transparent;
+    padding-top: 2px;
+}
+
+.footer p {
+    margin: 0; /* hilangkan margin default */
+    line-height: 1.1;
+    
+}
+
+.ttd-container {
+    position: relative; /* jadi patokan posisi cap */
+    display: inline-flex;
+    gap: -20px;
+    align-items: center;
+    margin-top: -5px; /* naikkan tanda tangan dan cap */
+}
+
+
+.ttd {
+    z-index: 1; /* Rendah, agar stempel (9999) tetap di atas */
+    height: 40px;
+    width: auto;
+}
+
+.cap-stempel {
+    position: absolute;
+    left: 0;
+    top: 0; /* sejajar atas tanda tangan */
+    height: 40px;
+    width: auto;
+    opacity: 0.90;
+    z-index: 9999; /* pastikan lebih tinggi dari semua */
+    pointer-events: none;
+}
+
+.footer p.nama-kepsek {
+    position: relative;
+    top: -10px; /* sedikit naikkan nama */
+}
         .qrcode {
             position: absolute;
             bottom: 4px;
@@ -152,11 +189,11 @@
                 <tr>
                     <td style="width:2.5cm; vertical-align: top; padding-right:5px;">
                         <div class="photo">
-                            <img src="{{ public_path('foto_siswa/'.$siswa->foto_siswa) }}" alt="Foto Siswa">
+                            <img src="{{ public_path('storage/'.$siswa->foto_siswa) }}" alt="Foto Siswa">
                         </div>
                     </td>
                     <td style="vertical-align: top;">
-                        <p class="nama"><strong>{{ $siswa->nama_siswa }}</strong></p>
+                        <p class="nama"><strong>{{ strtoupper($siswa->nama_siswa) }}</strong></p>
                         <table style="border-collapse: collapse; font-size:9px;">
                             <tr>
                                 <td>NIS:</td>
@@ -165,7 +202,7 @@
                                 <td>{{ $siswa->nisn }}</td>
                             </tr>
                         </table>
-                        <p>TTL: {{ $siswa->tempat_lahir }}, {{ \Carbon\Carbon::parse($siswa->tanggal_lahir)->format('d/m/Y') }}</p>
+                        <p>TTL: {{ ucwords(strtolower($siswa->tempat_lahir)) }}, {{ \Carbon\Carbon::parse($siswa->tanggal_lahir)->format('d/m/Y') }}</p>
                     </td>
                 </tr>
             </table>
@@ -175,8 +212,11 @@
         {{-- Footer --}}
         <div class="footer">
             <p>Kepala Sekolah</p>
-            <img src="{{ public_path('ttdkepsek.png') }}" class="ttd" alt="Tanda Tangan">
-            <p><strong>Heru Purwanto, S.Pd.</strong></p>
+            <div class="ttd-container">
+                <img src="{{ public_path('images/idcardSiswa/capstempel.png') }}" class="cap-stempel" alt="Cap Stempel">
+                <img src="{{ public_path('images/idcardSiswa/ttdkepsek.png') }}" class="ttd" alt="Tanda Tangan">
+            </div>
+            <p class="nama-kepsek"><strong>Heru Purwanto, S.Pd.</strong></p>
         </div>
 
         {{-- QR Code --}}
