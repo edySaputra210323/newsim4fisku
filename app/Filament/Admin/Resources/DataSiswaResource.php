@@ -537,8 +537,8 @@ class DataSiswaResource extends Resource
                 ])
                 ->bulkActions([
                     Tables\Actions\BulkAction::make('export_qrcode_pdf')
-                    ->label('Export QR Code PDF')
-                    ->icon('heroicon-o-document-arrow-down')
+                    ->label('Cetak ID Card PDF')
+                    ->icon('heroicon-o-qr-code')
                     ->action(function ($records) {
                         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('siswa.qr_bulk_pdf', ['records' => $records])
                             ->setPaper('a4', 'portrait')

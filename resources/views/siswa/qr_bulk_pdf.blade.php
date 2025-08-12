@@ -19,59 +19,83 @@
             margin: 5px;
             position: relative;
             page-break-inside: avoid;
+    
+            /* Background PNG */
+            background-image: url('{{ public_path("background_kartu.png") }}');
+            background-size: cover; /* Penuhi kartu */
+            background-position: center; /* Posisikan di tengah */
+            background-repeat: no-repeat; /* Jangan diulang */
         }
         .header {
-            display: flex;
-            align-items: center;
-            padding: 4px;
-            background: #2e31f8;
-            color: #fcf6f6;
-        }
-        .header img {
-            height: 18px;
-            margin-right: 5px;
-        }
-        .header h1 {
-            font-size: 10px;
             margin: 0;
-            line-height: 1.2;
+            padding: 0;
+            display: flex;
+            flex-direction: row; /* Ubah ke column agar school-info di bawah logo */
+            align-items: center; /* Sejajarkan secara horizontal ke tengah */
+            background: rgba(253, 253, 253, 0.85);
+            color: #0188ff;
+            border-radius: 6px;
+            border: 1px solid #83808027;
+        }
+
+        .logo {
+            display: inline-block;
+            align-items: center;
+            justify-content: center; /* Sejajarkan logo ke tengah */
+        }
+
+        .logo img {
+            padding-right: 5px;
+            padding-left: 8px;
+            padding-top: 10px;
+            padding-bottom: 0;
+            height: 50px;
+            width: 50px;
+        }
+
+        .school-info {
+            align-items: center;
+            display: inline-block;
+            margin: 0; /* Beri jarak atas agar tidak terlalu rapat */
+            padding: 0;
+            text-align: center; /* Teks judul dan alamat ditengah */
+        }
+
+        .school-info h1,
+        .school-info p {
+            margin: 0; /* hapus semua margin default */
+            padding: 0;
+        }
+
+        .school-info h1 {
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1; /* rapatkan */
+        }
+
+        .school-info p {
+            font-size: 8px;
+            line-height: 1;
         }
         .content {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start; /* Pastikan mulai dari atas foto */
             padding: 4px;
             font-size: 9px;
         }
         .photo {
-    width: 2.5cm;
-    height: 3.2cm;
-    border: 1px solid #ccc;
-    background: #fff;
-}
-.photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-.nama {
-    margin: 0 0 10px 0;
-    font-size: 10px;
-}
-        .details {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; /* Pastikan isi mulai dari atas */
-            vertical-align: top; /* Untuk PDF rendering */
+            width: 2.5cm;
+            height: 3.2cm;
+            border: 1px solid #ccc;
+            background: #fff;
         }
-        .details .nama {
-            margin: 0 0 4px 0; /* Jarak bawah sedikit dari nama */
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
-        .details .id-row {
-            display: flex;
-            gap: 10px; /* Jarak antara NIS dan NISN */
-            margin-bottom: 4px;
+        .nama {
+            margin: 10px 0 10px 0;
+            font-size: 10px;
         }
         .details p {
             margin: 0;
@@ -84,10 +108,13 @@
             right: 4px;
             text-align: center;
             font-size: 8px;
+            background: rgba(255,255,255,0.5); /* Biar teks kaki terbaca */
         }
         .ttd {
-            height: 15px;
-            margin-top: -5px;
+            height: 40px;
+            width: 40px;
+            margin-top: -18px;
+            margin-bottom: -20px;
         }
         .qrcode {
             position: absolute;
@@ -95,6 +122,9 @@
             right: 4px;
             width: 1.5cm;
             height: 1.5cm;
+            background: #fff; /* Supaya QR tetap jelas terbaca */
+            padding: 2px;
+            border-radius: 4px;
         }
         .qrcode img {
             width: 100%;
@@ -107,8 +137,13 @@
     <div class="card">
         {{-- Header --}}
         <div class="header">
-            <img src="{{ public_path('logo_sekolah.png') }}" alt="Logo">
-            <h1>SMPIT AL-FITYAN KUBU RAYA</h1>
+            <div class="logo">
+                <img src="{{ public_path('images/copIdcard.png') }}" alt="Logo">
+            </div>
+            <div class="school-info">
+                <h1>SMPIT AL-FITYAN KUBU RAYA</h1>
+                <p>Jl. Raya Sungai Kakap Pal 7, Desa Pal Sembilan  <br> Kec. Sungai Kakap Kab. Kubu Raya</p>
+            </div>
         </div>
 
         {{-- Content --}}
@@ -140,8 +175,8 @@
         {{-- Footer --}}
         <div class="footer">
             <p>Kepala Sekolah</p>
-            <img src="{{ public_path('ttd_kepsek.png') }}" class="ttd" alt="Tanda Tangan">
-            <p><strong>Nama Kepala Sekolah</strong></p>
+            <img src="{{ public_path('ttdkepsek.png') }}" class="ttd" alt="Tanda Tangan">
+            <p><strong>Heru Purwanto, S.Pd.</strong></p>
         </div>
 
         {{-- QR Code --}}
