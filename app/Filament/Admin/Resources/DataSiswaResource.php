@@ -540,14 +540,26 @@ class DataSiswaResource extends Resource
                     ->label('Cetak ID Card PDF')
                     ->icon('heroicon-o-qr-code')
                     ->action(function ($records) {
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('siswa.qr_bulk_pdf', ['records' => $records])
+                        // Render halaman depan
+                        $htmlFront = view('siswa.qr_bulk_pdf', ['records' => $records])->render();
+            
+                        // Render halaman belakang
+                        $htmlBack = view('siswa.qr_bulk_pdf_back', ['records' => $records])->render();
+            
+                        // Gabungkan dengan page break
+                        $combinedHtml = $htmlFront . '<div style="page-break-before: always;"></div>' . $htmlBack;
+            
+                        // Buat PDF
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($combinedHtml)
                             ->setPaper('a4', 'portrait')
                             ->setOption('isRemoteEnabled', true)
                             ->setOption('isHtml5ParserEnabled', true)
                             ->setOption('isPhpEnabled', true);
+            
+                        // Download file PDF
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
-                        }, 'label-siswa-qr.pdf');
+                        }, 'kartu-pelajar-depan-belakang.pdf');
                     }),
                     Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
