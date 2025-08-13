@@ -9,6 +9,14 @@
             margin: 0;
             padding: 0;
         }
+
+        .foto-siswa img,
+        .logo img,
+        .cap-stempel,
+        .ttd {
+            image-rendering: crisp-edges; /* ini bikin gambar tidak blur */
+        }
+
         .card {
             width: 8.6cm;
             height: 5.4cm;
@@ -21,10 +29,11 @@
             page-break-inside: avoid;
     
             /* Background PNG */
-            background-image: url('{{ public_path("images/idcardSiswa/background_kartu.png") }}');
+            background-image: url("{{ str_replace('\\','/', public_path('images/idcardSiswa/background_kartu.png')) }}");
             background-size: cover; /* Penuhi kartu */
             background-position: center; /* Posisikan di tengah */
             background-repeat: no-repeat; /* Jangan diulang */
+            image-rendering: crisp-edges; /* jaga ketajaman */
         }
         .header {
             margin: 0;
@@ -179,7 +188,7 @@
             </div>
             <div class="school-info">
                 <h1>SMPIT AL-FITYAN KUBU RAYA</h1>
-                <p>Jl. Raya Sungai Kakap Pal 7, Desa Pal Sembilan  <br> Kec. Sungai Kakap Kab. Kubu Raya</p>
+                <p>Jl. Raya Sungai Kakap Pal 7, Desa Pal Sembilan  <br> Kec. Sungai Kakap Kab. Kubu Raya 78381</p>
             </div>
         </div>
 
@@ -189,7 +198,12 @@
                 <tr>
                     <td style="width:2.5cm; vertical-align: top; padding-right:5px;">
                         <div class="photo">
-                            <img src="{{ public_path('storage/'.$siswa->foto_siswa) }}" alt="Foto Siswa">
+                            <img 
+                                src="{{ !empty($siswa->foto_siswa) && file_exists(public_path('storage/'.$siswa->foto_siswa))
+                                    ? public_path('storage/'.$siswa->foto_siswa)
+                                    : public_path('images/idcardSiswa/foto_default.png') 
+                                }}" 
+                                alt="Foto Siswa">
                         </div>
                     </td>
                     <td style="vertical-align: top;">

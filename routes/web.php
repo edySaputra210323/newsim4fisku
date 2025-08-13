@@ -63,4 +63,6 @@ Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
     Route::controller(SiswaController::class)->group(function () {
         Route::get('/siswa/{nis}', 'show')->name('siswa.show');
         Route::post('/siswa/generate-qr-pdf', 'generateQrPdf')->name('siswa.generate_qr_pdf');
+        Route::post('/siswa/generate-qr-pdf-combined', 'generateQrPdfWithBack')
+        ->name('siswa.generate_qr_pdf_combined');
     });
