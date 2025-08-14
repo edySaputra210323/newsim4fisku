@@ -179,7 +179,7 @@ return [
          *
          * @var string
          */
-        'default_font' => 'serif',
+        'default_font' => 'amiri', 'serif',
 
         /**
          * Image DPI setting
@@ -247,26 +247,6 @@ return [
          */
         'enable_javascript' => true,
 
-        /**
-         * Enable remote file access
-         *
-         *  If this setting is set to true, DOMPDF will access remote sites for
-         *  images and CSS files as required.
-         *
-         *  ==== IMPORTANT ====
-         *  This can be a security risk, in particular in combination with isPhpEnabled and
-         *  allowing remote html code to be passed to $dompdf = new DOMPDF(); $dompdf->load_html(...);
-         *  This allows anonymous users to download legally doubtful internet content which on
-         *  tracing back appears to being downloaded by your server, or allows malicious php code
-         *  in remote html pages to be executed by your server with your account privileges.
-         *
-         *  This setting may increase the risk of system exploit. Do not change
-         *  this settings without understanding the consequences. Additional
-         *  documentation is available on the dompdf wiki at:
-         *  https://github.com/dompdf/dompdf/wiki
-         *
-         * @var bool
-         */
         'enable_remote' => false,
 
         /**
@@ -296,6 +276,21 @@ return [
          * @var bool
          */
         'enable_html5_parser' => true,
+    ],
+
+    'font_family' => [
+        'sans-serif' => [
+            'normal' => 'Helvetica',
+            'bold' => 'Helvetica-Bold',
+            'italic' => 'Helvetica-Oblique',
+            'bold_italic' => 'Helvetica-BoldOblique'
+        ],
+        'amiri' => [
+            'normal'      => public_path('fonts/Amiri-Regular.ttf'),
+            'bold'        => public_path('fonts/Amiri-Bold.ttf'),
+            'italic'      => public_path('fonts/Amiri-Italic.ttf'),
+            'bold_italic' => public_path('fonts/Amiri-BoldItalic.ttf'),
+        ]
     ],
 
 ];

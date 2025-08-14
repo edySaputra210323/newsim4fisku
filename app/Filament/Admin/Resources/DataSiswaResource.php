@@ -540,27 +540,32 @@ class DataSiswaResource extends Resource
                     ->label('Cetak ID Card PDF')
                     ->icon('heroicon-o-qr-code')
                     ->action(function ($records) {
-                        // Render halaman depan
-                        $htmlFront = view('siswa.qr_bulk_pdf', ['records' => $records])->render();
-            
-                        // Render halaman belakang
-                        $htmlBack = view('siswa.qr_bulk_pdf_back', ['records' => $records])->render();
-            
-                        // Gabungkan dengan page break
-                        $combinedHtml = $htmlFront . '<div style="page-break-before: always;"></div>' . $htmlBack;
-            
-                        // Buat PDF
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($combinedHtml)
-                            ->setPaper('a4', 'portrait')
-                            ->setOption('isRemoteEnabled', true)
-                            ->setOption('isHtml5ParserEnabled', true)
-                            ->setOption('isPhpEnabled', true);
-            
-                        // Download file PDF
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('siswa.qr_bulk_pdf', ['records' => $records])
+                        ->setPaper('a4', 'portrait')
+                        ->setOption('isRemoteEnabled', true)
+                        ->setOption('isHtml5ParserEnabled', true)
+                        ->setOption('isPhpEnabled', true);
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
-                        }, 'kartu-pelajar-depan-belakang.pdf');
+                        }, 'label-siswa-qr.pdf');
                     }),
+                    Tables\Actions\BulkAction::make('export_qrcode_pdf_back')
+                    ->label('Cetak ID Card PDF (Belakang)')
+                    ->icon('heroicon-o-qr-code')
+                    ->action(function ($records) {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                            'siswa.qr_bulk_pdf_back',
+                            ['records' => $records]
+            )
+            ->setPaper('a4', 'portrait')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true);
+
+            return response()->streamDownload(function () use ($pdf) {
+                echo $pdf->output();
+            }, 'idcard-belakang.pdf');
+        }),
                     Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
