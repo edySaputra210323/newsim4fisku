@@ -84,6 +84,7 @@
         </div>
         <div class="contact">
             <div>
+                <img src="{{ public_path('images/idcardSiswa/email.png') }}" alt="Email" class="icon">
                 fityan.kuburaya@gmail.com
             </div>
         </div>
