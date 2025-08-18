@@ -15,40 +15,44 @@ class EditTransaksionalInventaris extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        // Ambil data record yang sudah ada
         $record = $this->getRecord();
 
-        // Foto Inventaris
-        if (
-            !empty($data['foto_inventaris']) &&
-            $data['foto_inventaris'] !== $record->foto_inventaris
-        ) {
-            try {
-                Storage::disk('public')->delete($record->foto_inventaris);
-                \Log::info("File foto inventaris lama dihapus saat edit: {$record->foto_inventaris}");
-            } catch (\Exception $e) {
-                \Log::warning("Gagal menghapus file foto inventaris lama saat edit: {$record->foto_inventaris}, Error: {$e->getMessage()}");
+       // Hapus foto inventaris lama jika ada file baru dan path lama tidak null
+       if (
+        !empty($data['foto_inventaris']) &&
+        is_string($data['foto_inventaris']) &&
+        !empty($record->foto_inventaris) &&
+        $data['foto_inventaris'] !== $record->foto_inventaris
+            ) {
+                try {
+                    Storage::disk('public')->delete($record->foto_inventaris);
+                    Log::info("File foto inventaris lama dihapus saat edit: {$record->foto_inventaris}");
+                } catch (\Exception $e) {
+                    Log::warning("Gagal menghapus file foto inventaris lama: {$record->foto_inventaris}, Error: {$e->getMessage()}");
+                }
+            } elseif (empty($data['foto_inventaris'])) {
+                // Jika user tidak upload file baru, tetap pakai file lama
+                $data['foto_inventaris'] = $record->foto_inventaris;
             }
-        } elseif (empty($data['foto_inventaris'])) {
-            // Tidak upload baru → pertahankan nilai lama
-            $data['foto_inventaris'] = $record->foto_inventaris;
-        }
-    
-        // Nota Beli
+
+        // Hapus nota beli lama jika ada file baru dan path lama tidak null
         if (
             !empty($data['nota_beli']) &&
+            is_string($data['nota_beli']) &&
+            !empty($record->nota_beli) &&
             $data['nota_beli'] !== $record->nota_beli
         ) {
             try {
                 Storage::disk('public')->delete($record->nota_beli);
-                \Log::info("File nota beli lama dihapus saat edit: {$record->nota_beli}");
+                Log::info("File nota beli lama dihapus saat edit: {$record->nota_beli}");
             } catch (\Exception $e) {
-                \Log::warning("Gagal menghapus file nota beli lama saat edit: {$record->nota_beli}, Error: {$e->getMessage()}");
+                Log::warning("Gagal menghapus file nota beli lama: {$record->nota_beli}, Error: {$e->getMessage()}");
             }
         } elseif (empty($data['nota_beli'])) {
-            // Tidak upload baru → pertahankan nilai lama
             $data['nota_beli'] = $record->nota_beli;
         }
-    
+
         return $data;
     }
 

@@ -536,6 +536,36 @@ class DataSiswaResource extends Resource
                 ->icon('heroicon-m-trash'),
                 ])
                 ->bulkActions([
+                    Tables\Actions\BulkAction::make('export_qrcode_pdf')
+                    ->label('Cetak ID Card PDF')
+                    ->icon('heroicon-o-qr-code')
+                    ->action(function ($records) {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('siswa.qr_bulk_pdf', ['records' => $records])
+                        ->setPaper('a4', 'portrait')
+                        ->setOption('isRemoteEnabled', true)
+                        ->setOption('isHtml5ParserEnabled', true)
+                        ->setOption('isPhpEnabled', true);
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->output();
+                        }, 'label-siswa-qr.pdf');
+                    }),
+                    Tables\Actions\BulkAction::make('export_qrcode_pdf_back')
+                    ->label('Cetak ID Card PDF (Belakang)')
+                    ->icon('heroicon-o-qr-code')
+                    ->action(function ($records) {
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+                            'siswa.qr_bulk_pdf_back',
+                            ['records' => $records]
+            )
+            ->setPaper('a4', 'portrait')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true);
+
+            return response()->streamDownload(function () use ($pdf) {
+                echo $pdf->output();
+            }, 'idcard-belakang.pdf');
+        }),
                     Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),

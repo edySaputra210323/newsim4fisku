@@ -5,7 +5,9 @@ use App\Models\MutasiSiswa;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\InventarisController;
+use App\Http\Controllers\DataSiswaPublicController;
 
 Route::get('/', function () {
     return redirect()->route('filament.admin.auth.login');
@@ -55,3 +57,11 @@ Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
     })->name('siswa.dokumen_mutasi')->middleware('auth');
 
     Route::get('/inventaris/{kode_inventaris}', [InventarisController::class, 'show']);
+
+    // Route::get('/siswa/cetak-qrcode-siswa', [DataSiswaPublicController::class, 'cetakQrcode'])
+    // ->name('siswa.cetak_qrcode');
+    Route::controller(SiswaController::class)->group(function () {
+        Route::get('/siswa/{nis}', 'show')->name('siswa.show');
+        Route::post('/siswa/generate-qr-pdf', 'generateQrPdf')->name('siswa.generate_qr_pdf');
+        Route::post('/siswa/generate-qr-pdf-back', 'generateQrPdfBack')->name('siswa.generate_qr_pdf_back');
+    });
