@@ -18,7 +18,6 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "leandrocfe/filament-apex-charts": "dev-master",
-        "mpdf/mpdf": "^8.2",
         "oriondevelops/filament-greeter": "^0.2.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "solution-forest/filament-simplelightbox": "^0.0.11"
