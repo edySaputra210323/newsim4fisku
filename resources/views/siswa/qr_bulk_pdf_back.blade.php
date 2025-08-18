@@ -17,11 +17,12 @@
             border-radius: 6px;
             display: inline-block;
             margin: 5px;
-            margin-bottom: 20px; /* ✅ jarak antar kartu secara vertikal */
+            /* margin-bottom: 20px; ✅ jarak antar kartu secara vertikal */
             background-image: url("{{ public_path('images/idcardSiswa/idCardBack.png') }}");
             background-position: center;
             background-repeat: no-repeat;
             page-break-inside: avoid;
+            overflow: hidden; /* 🔥 penting: biar background ikut radius */
         }
         .title {
             font-size: 18px;
@@ -99,7 +100,7 @@
         
                 <!-- Kolom Logo -->
                 <td style="vertical-align: middle; text-align: right; width: 30%;">
-                    <img src="{{ public_path('images/copIdcard.png') }}" alt="Logo" style="height: 50px; width: 50px; margin-right: 5px;">
+                    <img src="{{ public_path('images/copIdcard.png') }}" alt="Logo" style="height: 55px; width: 55px; margin-right: 5px;">
                 </td>
             </tr>
         </table>
