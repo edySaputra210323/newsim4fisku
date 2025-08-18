@@ -12,14 +12,14 @@ use App\Models\DataSiswa; // Ganti jadi App\Models\Siswa jika model direname
 class SiswaController extends Controller
 {
     /**
-     * Menampilkan detail siswa berdasarkan NIS (public view).
+     * Menampilkan detail siswa berdasarkan token (public view).
      *
-     * @param string $nis
+     * @param string $token
      * @return \Illuminate\View\View
      */
-    public function show($nis)
+    public function show($token)
     {
-        $siswa = DataSiswa::where('nis', $nis)->firstOrFail();
+        $siswa = DataSiswa::where('token', $token)->firstOrFail();
         return view('siswa.show', compact('siswa'));
     }
 

@@ -236,7 +236,7 @@
         {{-- QR Code --}}
         <div class="qrcode">
             @php
-                $url = route('siswa.show', urlencode($siswa->nis));
+                $url = route('siswa.show', urlencode($siswa->token));
                 $qrCodeSvg = base64_encode(
                     QrCode::format('svg')->size(80)->generate($url)
                 );

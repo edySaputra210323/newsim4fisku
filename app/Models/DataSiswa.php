@@ -9,6 +9,7 @@ use App\Models\NilaiSiswa;
 use App\Models\JarakTempuh;
 use App\Models\MutasiSiswa;
 use App\Models\StatusSiswa;
+use Illuminate\Support\Str;
 use App\Models\RiwayatKelas;
 use App\Models\PekerjaanOrtu;
 use App\Models\PendidikanOrtu;
@@ -199,6 +200,14 @@ class DataSiswa extends Model
     protected static function boot()
     {
         parent::boot();
+
+         // Saat membuat siswa baru, generate token unik
+         static::creating(function ($siswa) {
+            if (empty($siswa->token)) {
+                $siswa->token = Str::uuid(); // bisa juga Str::random(12)
+            }
+        });
+        
         // Event deleting
         static::deleting(function ($data_siswa) {
         // Hapus file foto dari storage

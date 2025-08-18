@@ -61,7 +61,7 @@ Route::get('/siswa/dokumen_mutasi/{record}', function ($record) {
     // Route::get('/siswa/cetak-qrcode-siswa', [DataSiswaPublicController::class, 'cetakQrcode'])
     // ->name('siswa.cetak_qrcode');
     Route::controller(SiswaController::class)->group(function () {
-        Route::get('/siswa/{nis}', 'show')->name('siswa.show');
+        Route::get('/siswa/{token}', 'show')->name('siswa.show');
         Route::post('/siswa/generate-qr-pdf', 'generateQrPdf')->name('siswa.generate_qr_pdf');
         Route::post('/siswa/generate-qr-pdf-back', 'generateQrPdfBack')->name('siswa.generate_qr_pdf_back');
     });
