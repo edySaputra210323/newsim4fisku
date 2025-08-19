@@ -227,6 +227,9 @@ class MutasiSiswaResource extends Resource
                 ->send();
         }
         return $table
+        ->modifyQueryUsing(function (Builder $query) {
+            return $query->orderBy('tanggal_mutasi', 'desc');
+        })
             ->recordAction(null)
             ->recordUrl(null)
             ->extremePaginationLinks()
@@ -265,7 +268,7 @@ class MutasiSiswaResource extends Resource
                     })
                     ->label('Tipe Mutasi'),
                 Tables\Columns\TextColumn::make('tanggal_mutasi')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('kelas.nama_kelas')
                     ->sortable()

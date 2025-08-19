@@ -33,11 +33,12 @@
             color: rgb(75, 74, 73);
         }
         .vision {
-            font-size: 13px;
+            font-size: 12px;
+            font-weight: bold;
             text-align: center;
-            margin-bottom: 5px;
             color: rgb(75, 74, 73);
-            margin: 5px 10px 5px 10px;
+            margin: 5px 10px;   /* kiri-kanan sama */
+            text-align: center; /* bikin teks rata kiri-kanan */
         }
         /* .arabic {
             margin: 5px 5px 5px 5px;
@@ -52,9 +53,9 @@
             text-align: center;
             font-style: italic;
             padding-top: 12px;
-            margin-bottom: 5px;
             color: rgb(75, 74, 73);
-            margin: 5px 10px 5px 10px;
+            margin: 5px 10px;   /* kiri-kanan sama */
+            text-align: center; /* bikin teks rata kiri-kanan */
         }
         
     </style>
@@ -64,7 +65,7 @@
     <div class="card">
         <div class="title">VISI</div>
         <div class="vision">
-            “Membangun generasi yang beriman, menguasai ilmu pengetahuan dan mampu menghadapi tantangan zaman”.
+            “Terwujudnya Generasi yang Sholeh, Unggul Dalam Prestasi, Berakhlaqul Karimah dan Berwawasan Lingkungan”.
         </div>
         {{-- <div class="arabic">
             مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ
@@ -84,7 +85,7 @@
             </div>
         </div> --}}
 
-        <table style="width: 100%; margin-top: 20px; background-color: #cecece;">
+        <table style="width: 100%; margin-top: 10px; background-color: #cecece;">
             <tr>
                 <!-- Kolom Kontak -->
                 <td style="vertical-align: top; width: 70%; padding-left: 10px;">
@@ -99,8 +100,10 @@
                 </td>
         
                 <!-- Kolom Logo -->
-                <td style="vertical-align: middle; text-align: right; width: 30%;">
-                    <img src="{{ public_path('images/copIdcard.png') }}" alt="Logo" style="height: 55px; width: 55px; margin-right: 5px;">
+                <td style="vertical-align: top; text-align: right; width: 30%;">
+                    <img src="{{ public_path('images/logoSMPIT.png') }}"
+                         alt="Logo" 
+                         style="height: 60px; width: 60px; margin-right: 3px;">
                 </td>
             </tr>
         </table>
