@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Pages;
 use Filament\Pages\Page;
 use Orion\FilamentGreeter\GreeterWidget;
 use App\Filament\Admin\Widgets\SiswaPerAngkatanChart;
+use App\Filament\Admin\Widgets\StatistikSiswaTable;
 
 class Dashboard extends Page
 {
@@ -18,6 +19,7 @@ class Dashboard extends Page
             // Ini akan muncul setelah Greeter (karena sort Greeter -1)
             GreeterWidget::class,
             SiswaPerAngkatanChart::class,
+            StatistikSiswaTable::class,
         ];
     }
 }

@@ -339,5 +339,22 @@ class DataSiswa extends Model
     {
         return "{$this->nama_siswa} - {$this->nis}";
     }
+
+    public function scopeAktif($q)
+    {
+        return $q->whereHas('UpdateStatusSiswa', fn ($s) =>
+            $s->whereRaw('LOWER(status) = ?', ['aktif'])
+        );
+    }
+
+    public function scopePerempuan($q)
+    {
+        return $q->whereIn('jenis_kelamin', ['P', 'Perempuan']);
+    }
+
+    public function scopeLaki($q)
+    {
+        return $q->whereIn('jenis_kelamin', ['L', 'Laki-laki']);
+    }
 }
     

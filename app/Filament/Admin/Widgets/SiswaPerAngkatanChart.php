@@ -7,6 +7,8 @@ use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class SiswaPerAngkatanChart extends ApexChartWidget
 {
+    // protected int|string|array $columnSpan = 6;
+
     protected static ?string $chartId = 'siswaPerAngkatanChart';
 
     protected static ?string $heading = 'Jumlah Siswa per Angkatan (Laki-laki - Perempuan - Total)';
